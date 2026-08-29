@@ -35,8 +35,10 @@ from pathlib import Path
 
 import glfw
 
-# 호환되는 GLX 문맥을 선택하려면 ``glfw.init()``보다 먼저 호출해야 한다.
-glfw.init_hint(glfw.PLATFORM, glfw.PLATFORM_X11)
+# Linux에서는 호환되는 GLX 문맥을 선택하도록 ``glfw.init()`` 전에 X11을 지정한다.
+# macOS에는 X11 backend가 없으므로 GLFW가 Cocoa backend를 자동 선택하게 둔다.
+if sys.platform.startswith("linux"):
+    glfw.init_hint(glfw.PLATFORM, glfw.PLATFORM_X11)
 
 import mujoco
 import numpy as np

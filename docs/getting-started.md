@@ -6,6 +6,7 @@
 ## 1. 준비 사항과 저장소 받기
 
 - Linux 데스크톱과 OpenGL을 사용할 수 있는 화면 세션
+- 또는 macOS 데스크톱(Apple Silicon/Intel)과 로컬 화면 세션
 - Python 3.12와 `venv` (Ubuntu 24.04, Python 3.12에서 검증)
 - Git
 
@@ -15,6 +16,44 @@ Ubuntu 24.04에서는 먼저 Python 가상환경과 headless OpenGL 런타임을
 sudo apt-get update
 sudo apt-get install --yes python3.12-venv libgl1 libosmesa6
 ```
+
+### macOS 준비
+
+macOS에서는 Ubuntu용 `libgl1`, `libosmesa6`를 설치하지 않는다. MuJoCo wheel이
+macOS용 그래픽 라이브러리를 포함하므로 Apple Command Line Tools, Git, Python 3.12만
+준비하면 된다. 먼저 Apple Command Line Tools가 설치되어 있는지 확인한다.
+
+```bash
+xcode-select -p
+```
+
+경로가 출력되지 않으면 다음 명령으로 설치 창을 열고 설치를 마친다.
+
+```bash
+xcode-select --install
+```
+
+[Homebrew](https://brew.sh/)가 없다면 공식 안내에 따라 먼저 설치한다. 그다음 Apple
+Silicon과 Intel Mac 모두 아래 명령으로 Python 3.12와 Git을 설치할 수 있다.
+
+```bash
+brew update
+brew install python@3.12 git
+```
+
+설치된 Python을 확인한다. `Python 3.12.x`가 출력되어야 한다.
+
+```bash
+python3.12 --version
+```
+
+`python3.12`를 찾지 못하면 Homebrew가 설치 후 출력한 PATH 안내를 적용하고 터미널을
+다시 연다. 앱 창을 띄울 때는 SSH 세션이 아닌 macOS의 Terminal, iTerm2 같은 로컬
+터미널을 사용한다.
+
+이 절차와 GUI 실행은 Apple Silicon macOS에서 검증했다. 애플리케이션은 macOS에서
+Cocoa GLFW backend와 호환 OpenGL context를 자동으로 선택하므로 XQuartz나 별도 X11
+서버가 필요하지 않다.
 
 저장소를 받은 뒤 모든 명령을 저장소 루트에서 실행한다.
 
@@ -100,6 +139,11 @@ python tests/test_whole_body.py
 ```bash
 python src/teleop_app.py
 ```
+
+macOS에서 시작할 때 `OpenGL error 0x500 in or before mjr_makeContext` 경고가 한 번
+출력될 수 있다. 창이 정상적으로 열리고 조작할 수 있다면 실행을 막는 오류가 아니다.
+`The requested platform is not supported` 또는 `glfw.init() failed`가 발생하면 최신
+코드를 받은 상태인지 확인한 뒤 가상환경을 다시 활성화한다.
 
 속도, IK·제어 이득, 파지와 UI 범위를 바꾸려면 코드를 수정하지 말고
 [YAML 파라미터 설정](configuration.md)에 따라 사용자 설정을 적용한다.

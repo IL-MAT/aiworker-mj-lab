@@ -7,12 +7,15 @@ GLFW/ImGui/MuJoCo 렌더링 연결을 담당한다. 순환 import를 피하기 �
 """
 
 import ctypes
+import sys
 import time
 
 import glfw
 
-# 호환되는 GLX 문맥을 선택하려면 ``glfw.init()``보다 먼저 호출해야 한다.
-glfw.init_hint(glfw.PLATFORM, glfw.PLATFORM_X11)
+# Linux에서는 호환되는 GLX 문맥을 선택하도록 ``glfw.init()`` 전에 X11을 지정한다.
+# macOS에는 X11 backend가 없으므로 GLFW가 Cocoa backend를 자동 선택하게 둔다.
+if sys.platform.startswith("linux"):
+    glfw.init_hint(glfw.PLATFORM, glfw.PLATFORM_X11)
 
 import mujoco
 import numpy as np
@@ -56,6 +59,12 @@ def setup_render(app, window_w, window_h):
     """
     if not glfw.init():
         raise RuntimeError("glfw.init() failed")
+    if sys.platform == "darwin":
+        # MuJoCo expects the default macOS compatibility context; ImGui's
+        # shader must therefore target the GLSL version exposed by it.
+        glsl_version = "#version 120"
+    else:
+        glsl_version = "#version 130"
     # ``mujoco.Renderer``의 GLFW offscreen context는 숨김 창을 만들기 위해
     # GLFW_VISIBLE=false window hint를 설정한다. Hint는 다음 create_window()에도
     # 남아 있으므로 policy camera를 먼저 만든 recorder에서는 주 창까지 UnMapped
@@ -79,7 +88,7 @@ def setup_render(app, window_w, window_h):
         glfw.destroy_window(window)
         glfw.terminate()
         raise RuntimeError("ImGui GLFW backend initialization failed")
-    if not imgui.backends.opengl3_init("#version 130"):
+    if not imgui.backends.opengl3_init(glsl_version):
         imgui.backends.glfw_shutdown()
         imgui.destroy_context()
         glfw.destroy_window(window)
