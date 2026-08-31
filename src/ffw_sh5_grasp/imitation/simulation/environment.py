@@ -23,15 +23,15 @@ def _required_id(model, kind, name):
 
 
 def enable_task_collisions(model, bin_body_names):
-    """Enable selected bins and task-relevant right-hand world contacts."""
+    """Enable selected task fixtures and task-relevant right-hand contacts."""
     active_geom_ids = []
     for body_name in bin_body_names:
         body_id = _required_id(model, mujoco.mjtObj.mjOBJ_BODY, body_name)
-        bin_geom_ids = np.flatnonzero(model.geom_bodyid == body_id).astype(int)
-        if bin_geom_ids.size != 5:
-            raise ValueError(
-                f"{body_name} must contain one floor and four collision walls"
-            )
+        bin_geom_ids = np.flatnonzero(
+            (model.geom_bodyid == body_id) & (model.geom_contype != 0)
+        ).astype(int)
+        if bin_geom_ids.size == 0:
+            raise ValueError(f"{body_name} must contain collision geometry")
         model.geom_contype[bin_geom_ids] = 1
         model.geom_conaffinity[bin_geom_ids] = 1
         model.body_contype[body_id] = 1
@@ -265,14 +265,27 @@ class AIWorkerMujocoEnv:
             self.fixed_ctrl[fixed_index[0]] = target
 
     def _enable_target_bin_collisions(self):
-        """Enable physical robot/can contacts for the task-local target bin.
+        """Enable physical contacts for task-local target bins and fixtures.
 
         The shared MJCF keeps these geoms on an isolated collision bit so other
-        regression tasks are unchanged. Policy mode promotes the bin
-        geoms to the normal contact group on its active model.
+        regression tasks are unchanged. Policy mode promotes active task
+        geometry to the normal contact group on its model while retaining a
+        target-bin-only id list for metrics and camera masks.
         """
-        self.target_bin_geom_ids = enable_task_collisions(
-            self.model, self.task.bin_body_names
+        self.task_collision_geom_ids = enable_task_collisions(
+            self.model, self.task.collision_body_names
+        )
+        target_body_ids = {
+            _required_id(self.model, mujoco.mjtObj.mjOBJ_BODY, body_name)
+            for body_name in self.task.bin_body_names
+        }
+        self.target_bin_geom_ids = np.asarray(
+            [
+                geom_id
+                for geom_id in self.task_collision_geom_ids
+                if int(self.model.geom_bodyid[geom_id]) in target_body_ids
+            ],
+            dtype=int,
         )
 
     def _configure_passive_base_hold(self):

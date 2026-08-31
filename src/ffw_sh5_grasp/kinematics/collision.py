@@ -124,6 +124,13 @@ def default_collision_pairs(model):
         body_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, body_name)
         if body_id < 0:
             continue
+        if body_name == "base_link":
+            proxy_id = mujoco.mj_name2id(
+                model, mujoco.mjtObj.mjOBJ_GEOM, "base_chassis_cbf_proxy"
+            )
+            if proxy_id >= 0:
+                body_geom[body_name] = proxy_id
+                continue
         candidates = collision_geoms_by_body.get(body_id, []).copy()
         if candidates:
             # group 3 collision mesh를 우선하되 base의 group 0 box도 fallback으로 남긴다.
@@ -184,6 +191,26 @@ def default_collision_pairs(model):
             for arm_body in arms[side][1:]:
                 mode = "table_top" if arm_body.startswith("hx5_") else "geom"
                 add("workspace", arm_body, "table", table_id, mode)
+
+    # The shelf-sort scene is activated at runtime by switching its collision
+    # bits from 4/0 to 1/1. Physics still uses every proxy, while the real-time
+    # CBF monitors only horizontal work surfaces to keep IK responsive.
+    shelf_geoms = []
+    for geom_id in range(model.ngeom):
+        geom_name = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, geom_id) or ""
+        if (
+            int(model.geom_contype[geom_id]) != 0
+            and int(model.geom_conaffinity[geom_id]) != 0
+            and (
+                geom_name.startswith("source_shelf_level_")
+                or geom_name.endswith("_top")
+                and geom_name.startswith("side_table_")
+            )
+        ):
+            shelf_geoms.append((geom_name, geom_id))
+    for side in ("r", "l"):
+        for geom_name, geom_id in shelf_geoms:
+            add("shelf", f"hx5_{side}_base", geom_name, geom_id)
     return tuple(pairs.values())
 
 

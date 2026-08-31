@@ -140,6 +140,14 @@ python tests/test_whole_body.py
 python src/teleop_app.py
 ```
 
+전방 3단 선반에서 캔을 집어 좌우 테이블의 색상 박스로 분류하는 환경은 `--env 2`로 실행한다.
+
+```bash
+python src/teleop_app.py --env 2
+```
+
+배치와 조작 순서는 [3단 선반 색상 분류](shelf-sort-task.md)를 참고한다.
+
 macOS에서 시작할 때 `OpenGL error 0x500 in or before mjr_makeContext` 경고가 한 번
 출력될 수 있다. 창이 정상적으로 열리고 조작할 수 있다면 실행을 막는 오류가 아니다.
 `The requested platform is not supported` 또는 `glfw.init() failed`가 발생하면 최신

@@ -97,7 +97,7 @@ MONITOR_JOINTS = (
 WINDOW_W = SETTINGS.integer("application.window.width", minimum=1)
 WINDOW_H = SETTINGS.integer("application.window.height", minimum=1)
 LOOP_HZ = SETTINGS.number("application.loop_hz", positive=True)
-ENV_TASK_NAMES = {0: "can_to_box", 1: "can_color_sort"}
+ENV_TASK_NAMES = {0: "can_to_box", 1: "can_color_sort", 2: "shelf_color_sort"}
 POLICY_REPRESENTATION_NAMES = ("auto", "joint", "task")
 DEFAULT_TASK_POLICY_IK_SPEED_SCALE = SETTINGS.number(
     "imitation.policy.task_ik_speed_scale", positive=True
@@ -234,7 +234,9 @@ class TeleopApp:
         self.imitation_task = create_task(self.model, self.task_name)
         # WholeBodyIK builds its collision-pair catalog at construction time.
         # Enable the task bin first so both physics and the CBF include it.
-        enable_task_collisions(self.model, self.imitation_task.bin_body_names)
+        self.task_collision_geom_ids = enable_task_collisions(
+            self.model, self.imitation_task.collision_body_names
+        )
         self._setup_control_systems()
         self._bind_model_entities()
         self._setup_target_state()
@@ -1256,22 +1258,26 @@ class TeleopApp:
     def _step_actuators(self, command):
         """렌더링 한 프레임 동안 현재 명령 묶음을 모든 물리 서브스텝에 적용한다."""
         data = self.data
+        # 위치/속도 actuator의 목표는 프레임 안에서 일정하고 MuJoCo가 각 서브스텝에
+        # 계속 적용한다. 같은 배열 값을 매 1 ms마다 다시 쓰지 않고 한 번만 갱신한다.
+        data.ctrl[self.bindings.lift_actuator] = command.lift_position
+        for wheel, (steer_angle, drive_speed) in command.wheel_commands.items():
+            wheel_binding = self.bindings.wheels[wheel]
+            data.ctrl[wheel_binding.steer_actuator] = steer_angle
+            data.ctrl[wheel_binding.drive_actuator] = drive_speed
+        for side in SIDES:
+            grasp.apply_grasp(
+                self.model,
+                data,
+                grasp=command.grasp[side],
+                thumb=command.thumb[side],
+                side=side,
+            )
+
+        # 팔 motor torque만 qpos/qvel/qfrc_bias에 의존하므로 매 서브스텝 재계산한다.
         for _ in range(self.steps_per_frame):
             for side in SIDES:
                 self.arm_controllers[side].apply(data, command.arm_positions[side])
-            data.ctrl[self.bindings.lift_actuator] = command.lift_position
-            for wheel, (steer_angle, drive_speed) in command.wheel_commands.items():
-                wheel_binding = self.bindings.wheels[wheel]
-                data.ctrl[wheel_binding.steer_actuator] = steer_angle
-                data.ctrl[wheel_binding.drive_actuator] = drive_speed
-            for side in SIDES:
-                grasp.apply_grasp(
-                    self.model,
-                    data,
-                    grasp=command.grasp[side],
-                    thumb=command.thumb[side],
-                    side=side,
-                )
             mujoco.mj_step(self.model, data)
 
     def _step_physics(self, drive_keys):
@@ -1345,7 +1351,7 @@ def _parse_args(argv):
         default=0,
         help=(
             "실행 환경 번호입니다: 0=기존 초록 캔→파랑 상자, "
-            "1=네 색 캔 분류 (기본값: 0)."
+            "1=네 색 캔 분류, 2=3단 선반→좌우 색상 박스 분류 (기본값: 0)."
         ),
     )
     parser.add_argument(

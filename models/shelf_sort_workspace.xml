@@ -1,0 +1,40 @@
+<mujocoinclude>
+  <!-- Robot-forward is +X and robot-left is +Y. Detailed OBJ visuals use a
+       reduced primitive collision proxy for responsive whole-body control. -->
+  <body name="source_shelf" pos="0.95 0 0">
+    <geom name="source_shelf_frame_visual" type="mesh" mesh="shelf_frame_mesh"
+      material="shelf_frame_mat" contype="0" conaffinity="0" group="2"/>
+    <geom name="source_shelf_boards_visual" type="mesh" mesh="shelf_boards_mesh"
+      material="shelf_board_mat" contype="0" conaffinity="0" group="2"/>
+
+    <geom name="source_shelf_back" type="box" pos="0.19 0 0.84" size="0.018 0.38 0.56"
+      rgba="0 0 0 0" contype="4" conaffinity="0" group="3"/>
+    <geom name="source_shelf_side_left" type="box" pos="0 0.35 0.84" size="0.19 0.025 0.60"
+      rgba="0 0 0 0" contype="4" conaffinity="0" group="3"/>
+    <geom name="source_shelf_side_right" type="box" pos="0 -0.35 0.84" size="0.19 0.025 0.60"
+      rgba="0 0 0 0" contype="4" conaffinity="0" group="3"/>
+    <geom name="source_shelf_level_1" type="box" pos="0 0 0.43" size="0.19 0.38 0.025"
+      rgba="0 0 0 0" contype="4" conaffinity="0" group="3"/>
+    <geom name="source_shelf_level_2" type="box" pos="0 0 0.755" size="0.19 0.38 0.025"
+      rgba="0 0 0 0" contype="4" conaffinity="0" group="3"/>
+    <geom name="source_shelf_level_3" type="box" pos="0 0 1.08" size="0.19 0.38 0.025"
+      rgba="0 0 0 0" contype="4" conaffinity="0" group="3"/>
+    <site name="source_shelf_middle_spawn" pos="-0.08 0 0.835" size="0.012"
+      rgba="1 0.75 0.1 0.45" group="5"/>
+  </body>
+
+  <!-- Neutral tables support the existing red/blue open target boxes. -->
+  <body name="side_table_red" pos="0.39 0.62 0">
+    <geom name="side_table_red_visual" type="mesh" mesh="side_table_mesh"
+      material="table_mat" contype="0" conaffinity="0" group="2"/>
+    <geom name="side_table_red_top" type="box" pos="0 0 0.67" size="0.24 0.27 0.035"
+      rgba="0 0 0 0" contype="4" conaffinity="0" group="3"/>
+  </body>
+
+  <body name="side_table_blue" pos="0.39 -0.62 0">
+    <geom name="side_table_blue_visual" type="mesh" mesh="side_table_mesh"
+      material="table_mat" contype="0" conaffinity="0" group="2"/>
+    <geom name="side_table_blue_top" type="box" pos="0 0 0.67" size="0.24 0.27 0.035"
+      rgba="0 0 0 0" contype="4" conaffinity="0" group="3"/>
+  </body>
+</mujocoinclude>

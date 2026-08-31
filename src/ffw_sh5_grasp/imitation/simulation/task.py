@@ -7,8 +7,14 @@ import numpy as np
 
 from ...config import SETTINGS
 
-TASK_NAMES = ("can_to_box", "can_color_sort")
-_KNOWN_BIN_BODIES = ("target_bin", "target_bin_red")
+TASK_NAMES = ("can_to_box", "can_color_sort", "shelf_color_sort")
+_KNOWN_BIN_BODIES = (
+    "target_bin",
+    "target_bin_red",
+    "source_shelf",
+    "side_table_red",
+    "side_table_blue",
+)
 
 
 def _required_id(model, kind, name):
@@ -46,8 +52,12 @@ class CanTaskScenario:
     table_position_y: float | None = None
     table_half_width_x: float | None = None
     table_half_width_y: float | None = None
+    bin_outer_half_extent: float | None = None
+    success_inner_half_extents: tuple[float, float] | None = None
     bin_wall_half_height: float | None = None
     right_arm_start_position: tuple[float, ...] | None = None
+    table_visible: bool = True
+    fixture_body_names: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -126,9 +136,48 @@ def _color_sort_scenario():
     )
 
 
+def _shelf_color_sort_scenario():
+    name = "shelf_color_sort"
+    values = SETTINGS.get("imitation.scenarios.shelf_color_sort")
+    variant_fields = (
+        values["variant_names"],
+        values["variant_materials"],
+        values["variant_cap_materials"],
+        values["target_sites"],
+        values["target_labels"],
+        values["variant_rgba"],
+    )
+    if len({len(field) for field in variant_fields}) != 1 or not variant_fields[0]:
+        raise ValueError(f"{name} variant settings must have equal non-zero lengths")
+    variants = tuple(
+        CanVariant(*items[:-1], tuple(float(value) for value in items[-1]))
+        for items in zip(*variant_fields)
+    )
+    return CanTaskScenario(
+        name=name,
+        description="red can -> left table box; blue can -> right table box",
+        variants=variants,
+        bin_body_names=tuple(values["bin_bodies"]),
+        bin_positions=tuple(
+            tuple(float(coordinate) for coordinate in position)
+            for position in values["bin_positions_m"]
+        ),
+        spawn_jitter_radius=float(values["spawn_jitter_radius_m"]),
+        can_z=float(values["can_z_m"]),
+        spawn_site_name=values["spawn_site"],
+        bin_outer_half_extent=float(values["bin_outer_half_extent_m"]),
+        success_inner_half_extents=tuple(
+            float(value) for value in values["success_inner_half_extents_m"]
+        ),
+        table_visible=False,
+        fixture_body_names=tuple(values["fixture_bodies"]),
+    )
+
+
 _SCENARIO_BUILDERS = {
     "can_to_box": _legacy_scenario,
     "can_color_sort": _color_sort_scenario,
+    "shelf_color_sort": _shelf_color_sort_scenario,
 }
 
 
@@ -159,6 +208,16 @@ def scenario_for_name(name):
     if scenario.table_half_width_x is not None and scenario.table_half_width_x <= 0.0:
         raise ValueError("task table half-depth must be positive")
     if (
+        scenario.bin_outer_half_extent is not None
+        and scenario.bin_outer_half_extent <= 0.0
+    ):
+        raise ValueError("task bin outer half-extent must be positive")
+    if scenario.success_inner_half_extents is not None and (
+        len(scenario.success_inner_half_extents) != 2
+        or any(value <= 0.0 for value in scenario.success_inner_half_extents)
+    ):
+        raise ValueError("task success inner half-extents must contain 2 positive values")
+    if (
         scenario.bin_wall_half_height is not None
         and scenario.bin_wall_half_height <= 0.0
     ):
@@ -185,6 +244,11 @@ class CanInBoxTask:
         self.name = self.scenario.name
         self.description = self.scenario.description
         self.bin_body_names = self.scenario.bin_body_names
+        self.collision_body_names = tuple(
+            dict.fromkeys(
+                self.scenario.bin_body_names + self.scenario.fixture_body_names
+            )
+        )
         self.can_joint = _required_id(model, mujoco.mjtObj.mjOBJ_JOINT, "can_free")
         self.can_body = _required_id(model, mujoco.mjtObj.mjOBJ_BODY, "can")
         self.can_visual_geom = _required_id(
@@ -200,9 +264,12 @@ class CanInBoxTask:
         )
         self.spawn_jitter_radius = float(self.scenario.spawn_jitter_radius)
         self.can_z = float(self.scenario.can_z)
-        self.inner_half_extents = np.asarray(
-            SETTINGS.get("imitation.task.inner_half_extents_m"), dtype=float
+        inner_half_extents = (
+            SETTINGS.get("imitation.task.inner_half_extents_m")
+            if self.scenario.success_inner_half_extents is None
+            else self.scenario.success_inner_half_extents
         )
+        self.inner_half_extents = np.asarray(inner_half_extents, dtype=float)
         self.height_range = tuple(
             float(v) for v in SETTINGS.get("imitation.task.success_height_range_m")
         )
@@ -248,7 +315,7 @@ class CanInBoxTask:
 
     def _configure_scene(self):
         """Apply the selected scenario's visibility, layout, and geometry."""
-        active = set(self.bin_body_names)
+        active = set(self.collision_body_names)
         positions = (
             {}
             if self.scenario.bin_positions is None
@@ -262,8 +329,10 @@ class CanInBoxTask:
                     raise ValueError(f"active task bin is missing: {body_name}")
                 continue
             geom_ids = np.flatnonzero(self.model.geom_bodyid == body_id).astype(int)
+            site_ids = np.flatnonzero(self.model.site_bodyid == body_id).astype(int)
             if body_name not in active:
                 self.model.geom_rgba[geom_ids, 3] = 0.0
+                self.model.site_rgba[site_ids, 3] = 0.0
                 self.model.geom_contype[geom_ids] = 0
                 self.model.geom_conaffinity[geom_ids] = 0
                 self.model.body_contype[body_id] = 0
@@ -272,6 +341,10 @@ class CanInBoxTask:
             self._bin_geom_ids[body_name] = geom_ids
             if body_name in positions:
                 self.model.body_pos[body_id] = positions[body_name]
+            if not body_name.startswith("target_bin"):
+                collision_geom_ids = geom_ids[self.model.geom_group[geom_ids] == 3]
+                self.model.geom_rgba[collision_geom_ids] = [0.05, 0.75, 1.0, 0.18]
+                continue
             floor_ids = [
                 geom_id
                 for geom_id in geom_ids
@@ -287,6 +360,8 @@ class CanInBoxTask:
                     f"{body_name} must contain exactly one named floor geom"
                 )
             floor_id = floor_ids[0]
+            if self.scenario.bin_outer_half_extent is not None:
+                self._resize_bin_xy(geom_ids, self.scenario.bin_outer_half_extent)
             floor_top = float(
                 self.model.geom_pos[floor_id, 2] + self.model.geom_size[floor_id, 2]
             )
@@ -307,12 +382,16 @@ class CanInBoxTask:
                     half_height = self.scenario.bin_wall_half_height
                     self.model.geom_size[geom_id, 2] = half_height
                     self.model.geom_pos[geom_id, 2] = floor_top + half_height
-        if (
+        table_geom = _required_id(self.model, mujoco.mjtObj.mjOBJ_GEOM, "table")
+        if not self.scenario.table_visible:
+            self.model.geom_rgba[table_geom, 3] = 0.0
+            self.model.geom_contype[table_geom] = 0
+            self.model.geom_conaffinity[table_geom] = 0
+        elif (
             self.scenario.table_position_y is not None
             or self.scenario.table_half_width_x is not None
             or self.scenario.table_half_width_y is not None
         ):
-            table_geom = _required_id(self.model, mujoco.mjtObj.mjOBJ_GEOM, "table")
             if self.scenario.table_position_y is not None:
                 self.model.geom_pos[table_geom, 1] = self.scenario.table_position_y
             if self.scenario.table_half_width_x is not None:
@@ -322,7 +401,42 @@ class CanInBoxTask:
         self._base_bin_rgba = {
             body_name: self.model.geom_rgba[geom_ids].copy()
             for body_name, geom_ids in self._bin_geom_ids.items()
+            if body_name in self.bin_body_names
         }
+
+    def _resize_bin_xy(self, geom_ids, outer_half_extent):
+        """Resize an open box in XY while preserving every vertical dimension."""
+        wall_half_thickness = 0.005
+        wall_center = outer_half_extent - wall_half_thickness
+        inner_half_extent = outer_half_extent - 2.0 * wall_half_thickness
+        for geom_id in geom_ids:
+            geom_name = (
+                mujoco.mj_id2name(
+                    self.model, mujoco.mjtObj.mjOBJ_GEOM, int(geom_id)
+                )
+                or ""
+            )
+            if geom_name.endswith("floor"):
+                self.model.geom_size[geom_id, :2] = outer_half_extent
+            elif geom_name.endswith(("front", "back")):
+                self.model.geom_pos[geom_id, 1] = np.copysign(
+                    wall_center, self.model.geom_pos[geom_id, 1]
+                )
+                self.model.geom_size[geom_id, :2] = (
+                    outer_half_extent,
+                    wall_half_thickness,
+                )
+            elif geom_name.endswith(("left", "right")):
+                self.model.geom_pos[geom_id, 0] = np.copysign(
+                    wall_center, self.model.geom_pos[geom_id, 0]
+                )
+                self.model.geom_size[geom_id, :2] = (
+                    wall_half_thickness,
+                    inner_half_extent,
+                )
+            self.model.geom_rbound[geom_id] = np.linalg.norm(
+                self.model.geom_size[geom_id]
+            )
 
     def _set_bin_color_layout(self, swapped):
         """Swap only bin appearance and matching target-site assignments."""
