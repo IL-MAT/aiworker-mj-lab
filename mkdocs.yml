@@ -85,6 +85,7 @@ nav:
         - 빠른 시작: getting-started.md
         - YAML 파라미터 설정: configuration.md
         - 화면과 조작: run.md
+        - 3단 선반-박스 색상 분류: shelf-sort-task.md
         - 모드 선택: control-modes.md
         - 문제 해결: troubleshooting.md
     - 모방학습:

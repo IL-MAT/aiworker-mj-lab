@@ -2,6 +2,9 @@
 
 설치와 실행은 [빠른 시작](getting-started.md)을 참고한다.
 
+전방 3단 선반에서 물체를 집어 좌우 테이블의 색상 박스로 옮기려면
+[3단 선반 색상 분류](shelf-sort-task.md)를 참고한다.
+
 ## 화면
 
 - **MuJoCo main**: 3D scene, target marker, gizmo, 상태 창

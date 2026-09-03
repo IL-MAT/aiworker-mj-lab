@@ -29,11 +29,12 @@ CAMERA_PRESETS = (
     SETTINGS.get("render.camera_presets.overview"),
     SETTINGS.get("render.camera_presets.hand_closeup"),
 )
+SHELF_SORT_CAMERA_PRESET = SETTINGS.get("render.camera_presets.shelf_sort")
 # 렌더링 스타일과 내부 버퍼 크기는 로봇 제어 튜닝값이 아니므로 구현과 함께 고정한다.
 MOUSE_ZOOM_SCALE = 0.05
 GIZMO_SIZE = 0.18
 MAX_SCENE_GEOMETRIES = 10_000
-COLLISION_GEOMETRY_RGBA = np.array([0.05, 0.75, 1.0, 0.28], dtype=np.float32)
+COLLISION_GEOMETRY_RGBA = np.array([0.05, 0.75, 1.0, 1.0], dtype=np.float32)
 PENETRATION_RGBA = np.array([1.0, 0.02, 0.02, 1.0], dtype=np.float32)
 UNSAFE_RGBA = np.array([1.0, 0.18, 0.02, 1.0], dtype=np.float32)
 BUFFER_RGBA = np.array([1.0, 0.78, 0.05, 1.0], dtype=np.float32)
@@ -45,6 +46,11 @@ FREQUENCY_EMA_PREVIOUS_WEIGHT = 0.9
 def set_camera_preset(cam, preset):
     """YAML에 정의된 카메라 프리셋의 시점·거리·방위·고도를 MuJoCo 카메라에 적용한다."""
     settings = CAMERA_PRESETS[0 if preset == 0 else 1]
+    _apply_camera_settings(cam, settings)
+
+
+def _apply_camera_settings(cam, settings):
+    """Apply one validated camera-settings mapping to a MuJoCo camera."""
     cam.lookat[:] = settings["lookat"]
     cam.distance = float(settings["distance"])
     cam.azimuth = float(settings["azimuth_deg"])
@@ -97,9 +103,18 @@ def setup_render(app, window_w, window_h):
     app.imgui_multi_viewport = True
 
     app.scene = mujoco.MjvScene(app.model, maxgeom=MAX_SCENE_GEOMETRIES)
+    if sys.platform == "darwin":
+        # Keep the full vendor visual meshes on macOS. The extra shadow-map and
+        # planar-reflection passes render the roughly one-million-triangle robot
+        # several times per frame and are far more expensive than the main pass.
+        app.scene.flags[mujoco.mjtRndFlag.mjRND_SHADOW] = False
+        app.scene.flags[mujoco.mjtRndFlag.mjRND_REFLECTION] = False
     app.cam = mujoco.MjvCamera()
     mujoco.mjv_defaultCamera(app.cam)
-    set_camera_preset(app.cam, 0)
+    if getattr(app, "task_name", "") == "shelf_color_sort":
+        _apply_camera_settings(app.cam, SHELF_SORT_CAMERA_PRESET)
+    else:
+        set_camera_preset(app.cam, 0)
     app.opt = mujoco.MjvOption()
     mujoco.mjv_defaultOption(app.opt)
     # Group 4 is hidden only from policy-camera rendering because the imported
@@ -314,6 +329,13 @@ def collision_visualization_data(app):
     return solver.collision_distances(app.data)
 
 
+def _set_collision_view_groups(option, enabled):
+    """Switch between detailed visual meshes and an uncluttered collision view."""
+    enabled = bool(enabled)
+    option.geomgroup[2] = not enabled
+    option.geomgroup[3] = enabled
+
+
 def _collision_color(distance, safe_distance):
     """충돌 거리의 관통·위험·buffer 상태에 대응하는 RGBA 색상 복사본을 반환한다."""
     if distance <= 0.0:
@@ -342,15 +364,21 @@ def _append_visual_geom(scene, geom_type, size, pos, mat, rgba):
 
 def _append_collision_overlay(app, constraints):
     """충돌 mesh에 색을 입히고 최근접점과 두 점을 잇는 선분을 그린다."""
+    task_collision_geom_ids = set(
+        int(geom_id) for geom_id in getattr(app, "task_collision_geom_ids", ())
+    )
     for index in range(app.scene.ngeom):
         geom = app.scene.geoms[index]
         if (
             int(geom.objtype) == int(mujoco.mjtObj.mjOBJ_GEOM)
             and 0 <= int(geom.objid) < app.model.ngeom
-            and int(app.model.geom_group[int(geom.objid)]) == 3
+            and (
+                int(app.model.geom_group[int(geom.objid)]) == 3
+                or int(geom.objid) in task_collision_geom_ids
+            )
         ):
             geom.rgba[:] = COLLISION_GEOMETRY_RGBA
-            geom.transparent = 1
+            geom.transparent = 0
 
     identity = np.eye(3)
     safe_distance = app.whole_body_solver.collision_safe_distance
@@ -389,9 +417,10 @@ def render_scene(app):
     targets.sync_ik_mocaps_from_targets(app)
     app.opt.flags[mujoco.mjtVisFlag.mjVIS_CONTACTPOINT] = app.contact_viz
     app.opt.flags[mujoco.mjtVisFlag.mjVIS_CONTACTFORCE] = app.contact_viz
-    # 모델 충돌 형상은 3번 그룹에 있고 MuJoCo 기본 옵션에서는 숨겨진다. CBF 겹침
-    # 표시는 같은 토글을 사용하지만 접촉력 시각화와는 독립적이다.
-    app.opt.geomgroup[3] = bool(getattr(app, "collision_viz", False))
+    # V는 상세 visual과 반투명 collision을 겹치지 않는 collision-only 보기다.
+    # 겹친 면의 z-fighting/투명도 정렬 깨짐을 없애고 형상을 명확히 보여 준다.
+    collision_viz = bool(getattr(app, "collision_viz", False))
+    _set_collision_view_groups(app.opt, collision_viz)
     fb_w, fb_h = glfw.get_framebuffer_size(app.window)
     viewport = mujoco.MjrRect(0, 0, fb_w, fb_h)
     mujoco.mjv_updateScene(
@@ -403,9 +432,10 @@ def render_scene(app):
         mujoco.mjtCatBit.mjCAT_ALL,
         app.scene,
     )
-    collision_data = collision_visualization_data(app)
-    if app.collision_viz:
-        _append_collision_overlay(app, collision_data)
+    if collision_viz:
+        # IK solve에서 이미 계산하는 최근접점을 렌더 단계에서 다시 계산하지 않는다.
+        # 단순 geometry 보기만으로도 실제 물리 collision 범위를 확인할 수 있다.
+        _append_collision_overlay(app, ())
     mujoco.mjr_render(viewport, app.scene, app.context)
     draw_transform_gizmo(app, viewport)
 

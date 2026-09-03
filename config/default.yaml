@@ -9,8 +9,9 @@ application:
   window:
     width: 1440
     height: 900
-  # 화면 한 프레임에서 제어 명령을 갱신하는 빈도다.
-  loop_hz: 25.0
+  # 화면 한 프레임에서 제어 명령을 갱신하는 빈도다. macOS operator view는
+  # visual-only LOD mesh를 사용해 이 30 Hz 주기를 유지한다.
+  loop_hz: 30.0
   # 양팔의 기본 관절 자세다. 순서는 1번 관절부터 7번 관절까지이며 단위는 rad이다.
   home_arm_position_rad: [0.0, 0.0, 0.0, -1.5707963267948966, 0.0, 0.0, 0.0]
   # 리프트 목표 범위와 키보드 조그 속도다.
@@ -185,6 +186,11 @@ render:
       distance: 0.5
       azimuth_deg: 90.0
       elevation_deg: -15.0
+    shelf_sort:
+      lookat: [0.50, 0.0, 0.72]
+      distance: 3.0
+      azimuth_deg: 25.0
+      elevation_deg: -32.0
 
 # ROS/whole-body 경로와 분리된 ALOHA-style imitation 환경 설정이다.
 imitation:
@@ -231,6 +237,28 @@ imitation:
     success_height_range_m: [0.76, 0.86]
     settle_speed_m_s: 0.08
   scenarios:
+    shelf_color_sort:
+      # 로봇 기준 +X 전방의 3단 선반 중간 단에서 캔을 집는다. +Y 왼쪽 테이블에는
+      # 빨강 박스, -Y 오른쪽 테이블에는 파랑 박스가 있다.
+      spawn_site: source_shelf_middle_spawn
+      spawn_jitter_radius_m: 0.04
+      can_z_m: 0.835
+      variant_names: [red, blue]
+      variant_materials: [can_red_sort_mat, can_green_sort_mat]
+      variant_cap_materials: [can_red_sort_mat, can_green_sort_mat]
+      target_sites: [target_bin_red_center, target_bin_center]
+      target_labels: [red, blue]
+      variant_rgba:
+        - [0.86, 0.06, 0.06, 1.0]
+        - [0.04, 0.24, 0.92, 1.0]
+      # 로봇 기준 왼쪽(+Y)은 빨강, 오른쪽(-Y)은 파랑 박스다. 두 테이블 사이에는
+      # 폭 0.62 m인 모바일 베이스가 좌우 4 cm 여유로 들어가는 0.70 m 통로를 둔다.
+      bin_bodies: [target_bin_red, target_bin]
+      bin_positions_m: [[0.39, 0.62, 0.7125], [0.39, -0.62, 0.7125]]
+      # 기존 높이는 유지하고 상자 바닥의 가로·세로만 28 cm로 넓힌다.
+      bin_outer_half_extent_m: 0.14
+      success_inner_half_extents_m: [0.13, 0.13]
+      fixture_bodies: [source_shelf, side_table_red, side_table_blue]
     can_color_sort:
       # 캔 색과 무관한 공통 영역에서 respawn하여 시작 위치가 정답 상자를 누설하지 않는다.
       # 기준점은 최초 배치보다 상자 쪽으로 10 cm 밀어 두 상자 사이에 둔다.
