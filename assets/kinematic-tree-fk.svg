@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="460" viewBox="0 0 1000 460" role="img" aria-labelledby="title desc">
+  <title id="title">MJCF 기구학 트리의 FK와 Jacobian</title>
+  <desc id="desc">부모 body에서 고정 변환, hinge와 slide joint를 거쳐 site pose를 계산하고 관절 축과 중심으로 Jacobian 열을 만드는 과정</desc>
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#2563eb"/></marker>
+    <marker id="axis" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#dc2626"/></marker>
+    <style>
+      .title { font: 700 20px sans-serif; fill: #172033; }
+      .label { font: 17px sans-serif; fill: #172033; }
+      .small { font: 14px sans-serif; fill: #475569; }
+      .formula { font: 17px monospace; fill: #172033; }
+      .link { stroke: #475569; stroke-width: 10; stroke-linecap: round; }
+      .fixed { stroke: #2563eb; stroke-width: 3; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect width="1000" height="460" rx="18" fill="#f8fafc"/>
+  <text x="34" y="42" class="title">조상 경로의 변환을 순서대로 누적해 site pose와 Jacobian을 함께 만든다</text>
+
+  <rect x="50" y="115" width="130" height="72" rx="12" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="78" y="145" class="label">Parent</text>
+  <text x="76" y="169" class="small">(Rₚ, pₚ)</text>
+  <line x1="180" y1="151" x2="288" y2="151" class="fixed"/>
+  <text x="195" y="130" class="small">body fixed</text>
+  <text x="205" y="177" class="small">(Rᵦ⁰, pᵦ⁰)</text>
+
+  <circle cx="320" cy="151" r="28" fill="#fef3c7" stroke="#d97706" stroke-width="3"/>
+  <circle cx="320" cy="151" r="8" fill="#d97706"/>
+  <text x="282" y="105" class="label">Hinge i</text>
+  <line x1="320" y1="151" x2="320" y2="76" stroke="#dc2626" stroke-width="4" marker-end="url(#axis)"/>
+  <text x="330" y="82" class="small">a_w,i</text>
+  <path d="M350 140 A45 45 0 0 1 351 174" fill="none" stroke="#d97706" stroke-width="4" marker-end="url(#arrow)"/>
+  <text x="365" y="160" class="small">δᵢ</text>
+
+  <line x1="350" y1="151" x2="530" y2="230" class="link"/>
+  <circle cx="545" cy="237" r="26" fill="#dcfce7" stroke="#16a34a" stroke-width="3"/>
+  <text x="505" y="285" class="label">Slide j</text>
+  <line x1="545" y1="237" x2="625" y2="202" stroke="#dc2626" stroke-width="4" marker-end="url(#axis)"/>
+  <text x="585" y="185" class="small">a_w,j δⱼ</text>
+
+  <line x1="570" y1="247" x2="765" y2="312" class="link"/>
+  <line x1="775" y1="315" x2="850" y2="275" class="fixed"/>
+  <text x="785" y="342" class="small">site local (Rₛ, pₛ)</text>
+  <circle cx="872" cy="264" r="13" fill="#ede9fe" stroke="#7c3aed" stroke-width="4"/>
+  <line x1="872" y1="264" x2="932" y2="232" stroke="#7c3aed" stroke-width="4" marker-end="url(#arrow)"/>
+  <text x="840" y="214" class="label">Site</text>
+  <text x="878" y="294" class="small">p_site</text>
+
+  <line x1="320" y1="151" x2="872" y2="264" stroke="#94a3b8" stroke-width="2" stroke-dasharray="8 7"/>
+  <text x="500" y="130" class="small">p_site − c_w,i</text>
+
+  <rect x="50" y="370" width="900" height="60" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="72" y="396" class="formula">FK: p_site = p_e + R_e p_s,   R_site = R_e R_s</text>
+  <text x="72" y="419" class="formula">Jacobian: Jᵢ(h) = [a_w,i × (p_site − c_w,i); a_w,i]   ·   Jⱼ(s) = [a_w,j; 0]</text>
+</svg>

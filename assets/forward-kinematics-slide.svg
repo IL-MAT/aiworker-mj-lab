@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1050" viewBox="0 0 1400 1050" role="img" aria-labelledby="title desc">
+  <title id="title">Forward Kinematics: joint state to end-effector pose and Jacobian</title>
+  <desc id="desc">FFW-SH5 robot arm joint values flow through an MJCF kinematic tree to compute end-effector position, orientation, and a six by N Jacobian.</desc>
+  <defs>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#f3f7fc"/>
+    </linearGradient>
+    <marker id="blueArrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0 0 L12 6 L0 12 Z" fill="#2563eb"/>
+    </marker>
+    <marker id="orangeArrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0 0 L12 6 L0 12 Z" fill="#f97316"/>
+    </marker>
+    <style>
+      .title { font: 700 48px sans-serif; fill: #14213d; }
+      .subtitle { font: 400 25px sans-serif; fill: #52637a; }
+      .section { font: 700 25px sans-serif; fill: #1d4ed8; letter-spacing: 1px; }
+      .label { font: 700 28px sans-serif; fill: #182b49; }
+      .body { font: 400 22px sans-serif; fill: #52637a; }
+      .math { font: 600 25px monospace; fill: #182b49; }
+      .small { font: 500 18px sans-serif; fill: #52637a; }
+      .joint { fill: #ffffff; stroke: #2563eb; stroke-width: 8; }
+      .link { stroke: #1e3a5f; stroke-width: 23; stroke-linecap: round; }
+    </style>
+  </defs>
+
+  <rect width="1400" height="1050" fill="#f8fafc"/>
+  <rect x="45" y="40" width="1310" height="970" rx="22" fill="url(#panel)" stroke="#d6e2f1" stroke-width="3"/>
+  <rect x="45" y="40" width="20" height="970" rx="10" fill="#2563eb"/>
+
+  <text x="105" y="122" class="title">Forward Kinematics</text>
+  <text x="105" y="166" class="subtitle">현재 관절 상태로부터 말단의 위치, 자세, Jacobian을 계산</text>
+  <line x1="105" y1="202" x2="1295" y2="202" stroke="#d6e2f1" stroke-width="3"/>
+
+  <text x="110" y="260" class="section">INPUT</text>
+  <rect x="95" y="285" width="295" height="510" rx="18" fill="#eaf2ff" stroke="#93c5fd" stroke-width="3"/>
+  <text x="133" y="347" class="label">Joint state q</text>
+  <text x="133" y="387" class="body">MuJoCo qpos</text>
+  <rect x="125" y="430" width="235" height="70" rx="10" fill="#ffffff" stroke="#bfd4f5" stroke-width="2"/>
+  <text x="152" y="475" class="math">q = [q₁ ... q₇]ᵀ</text>
+  <g fill="#2563eb">
+    <circle cx="148" cy="555" r="12"/><circle cx="148" cy="615" r="12"/><circle cx="148" cy="675" r="12"/>
+  </g>
+  <text x="177" y="563" class="body">base pose + lift</text>
+  <text x="177" y="623" class="body">right / left arm</text>
+  <text x="177" y="683" class="body">joint angle / slide</text>
+  <text x="125" y="755" class="small">각 관절의 좌표와 회전축을</text>
+  <text x="125" y="780" class="small">기구학 트리에 반영</text>
+
+  <line x1="405" y1="540" x2="500" y2="540" stroke="#2563eb" stroke-width="8" marker-end="url(#blueArrow)"/>
+  <text x="425" y="510" class="small">forward</text>
+
+  <text x="532" y="260" class="section">MJCF KINEMATIC TREE</text>
+  <rect x="500" y="285" width="425" height="510" rx="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="3"/>
+  <text x="535" y="338" class="label">Transform accumulation</text>
+  <text x="535" y="375" class="body">parent → child → end effector</text>
+
+  <line x1="575" y1="655" x2="650" y2="540" class="link"/>
+  <line x1="650" y1="540" x2="735" y2="600" class="link"/>
+  <line x1="735" y1="600" x2="820" y2="468" class="link"/>
+  <line x1="820" y1="468" x2="866" y2="430" class="link"/>
+  <circle cx="575" cy="655" r="33" class="joint"/>
+  <circle cx="650" cy="540" r="33" class="joint"/>
+  <circle cx="735" cy="600" r="33" class="joint"/>
+  <circle cx="820" cy="468" r="33" class="joint"/>
+  <circle cx="866" cy="430" r="17" fill="#f97316" stroke="#c2410c" stroke-width="5"/>
+  <text x="540" y="718" class="small">base</text>
+  <text x="612" y="500" class="small">q₁</text>
+  <text x="750" y="650" class="small">q₄</text>
+  <text x="810" y="410" class="small">q₇</text>
+  <line x1="866" y1="430" x2="900" y2="370" stroke="#f97316" stroke-width="6" marker-end="url(#orangeArrow)"/>
+  <line x1="866" y1="430" x2="912" y2="442" stroke="#16a34a" stroke-width="6" marker-end="url(#orangeArrow)"/>
+  <text x="535" y="757" class="math">T₀ᴱ(q) = T₀¹(q₁) · ... · T⁶ᴱ(q₇)</text>
+
+  <line x1="942" y1="540" x2="1035" y2="540" stroke="#2563eb" stroke-width="8" marker-end="url(#blueArrow)"/>
+
+  <text x="1065" y="260" class="section">OUTPUT</text>
+  <rect x="1035" y="285" width="275" height="225" rx="18" fill="#ecfdf5" stroke="#86efac" stroke-width="3"/>
+  <circle cx="1082" cy="336" r="15" fill="#16a34a"/>
+  <text x="1112" y="346" class="label">EE pose</text>
+  <text x="1070" y="399" class="math">pᴱ = [x, y, z]ᵀ</text>
+  <text x="1070" y="444" class="math">Rᴱ / quaternion</text>
+  <text x="1070" y="480" class="small">world frame end effector</text>
+
+  <rect x="1035" y="540" width="275" height="255" rx="18" fill="#fff7ed" stroke="#fdba74" stroke-width="3"/>
+  <circle cx="1082" cy="592" r="15" fill="#f97316"/>
+  <text x="1112" y="602" class="label">Jacobian</text>
+  <text x="1070" y="654" class="math">J(q) ∈ ℝ⁶ˣᴺ</text>
+  <path d="M1070 686 h205 M1070 710 h205 M1070 734 h205 M1135 672 v78 M1200 672 v78" fill="none" stroke="#f97316" stroke-width="3"/>
+  <text x="1070" y="780" class="small">EE velocity = J(q) q̇</text>
+
+  <rect x="95" y="855" width="1215" height="105" rx="16" fill="#eff6ff" stroke="#bfdbfe" stroke-width="3"/>
+  <text x="130" y="902" class="label">핵심:</text>
+  <text x="235" y="902" class="body">현재 상태 q를 한 번의 트리 순회로 해석하여, 제어에 필요한 pose와 Jacobian을 동시에 제공</text>
+  <text x="130" y="937" class="small">kinematics/tree.py · kinematics.forward_site() · kinematics.point_jacobian()</text>
+</svg>

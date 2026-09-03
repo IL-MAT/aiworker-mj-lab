@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="440" viewBox="0 0 900 440" role="img" aria-labelledby="title desc">
+  <title id="title">World, startup anchor, live base 좌표계</title>
+  <desc id="desc">Whole-body target이 startup anchor를 통해 world에 고정되고 live base가 이동해도 목표가 움직이지 않는 관계</desc>
+  <defs>
+    <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#dc2626"/></marker>
+    <marker id="arrow-green" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#16a34a"/></marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#2563eb"/></marker>
+    <marker id="arrow-purple" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#7c3aed"/></marker>
+    <style>
+      .label { font: 18px sans-serif; fill: #172033; }
+      .small { font: 15px sans-serif; fill: #475569; }
+      .formula { font: 18px monospace; fill: #172033; }
+    </style>
+  </defs>
+  <rect width="900" height="440" rx="18" fill="#f8fafc"/>
+  <text x="34" y="42" class="label" font-weight="700">같은 target도 어떤 기준 frame으로 표현하는지에 따라 의미가 달라진다</text>
+
+  <line x1="105" y1="350" x2="210" y2="350" stroke="#dc2626" stroke-width="4" marker-end="url(#arrow-red)"/>
+  <line x1="105" y1="350" x2="105" y2="245" stroke="#16a34a" stroke-width="4" marker-end="url(#arrow-green)"/>
+  <text x="214" y="355" class="small">world X</text>
+  <text x="56" y="238" class="small">world Y</text>
+
+  <g transform="translate(300 300) rotate(-18)">
+    <line x1="0" y1="0" x2="120" y2="0" stroke="#dc2626" stroke-width="4" marker-end="url(#arrow-red)"/>
+    <line x1="0" y1="0" x2="0" y2="-105" stroke="#16a34a" stroke-width="4" marker-end="url(#arrow-green)"/>
+  </g>
+  <circle cx="300" cy="300" r="8" fill="#172033"/>
+  <text x="234" y="330" class="label">startup anchor</text>
+
+  <circle cx="650" cy="125" r="13" fill="#f59e0b" stroke="#92400e" stroke-width="3"/>
+  <text x="673" y="131" class="label">world-fixed hand target</text>
+  <line x1="306" y1="294" x2="639" y2="132" stroke="#2563eb" stroke-width="5" marker-end="url(#arrow-blue)"/>
+  <text x="420" y="188" class="label" fill="#2563eb">R(anchor) · p_local</text>
+
+  <g transform="translate(620 335) rotate(14)">
+    <rect x="-55" y="-32" width="110" height="64" rx="20" fill="#ddd6fe" stroke="#7c3aed" stroke-width="3"/>
+    <line x1="0" y1="0" x2="85" y2="0" stroke="#7c3aed" stroke-width="4" marker-end="url(#arrow-purple)"/>
+  </g>
+  <text x="560" y="400" class="label">이동한 live base</text>
+  <line x1="620" y1="335" x2="650" y2="145" stroke="#94a3b8" stroke-width="3" stroke-dasharray="8 7"/>
+  <text x="660" y="265" class="small">base가 움직여도 ON target은 고정</text>
+
+  <rect x="90" y="72" width="520" height="52" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="118" y="104" class="formula">p_world = p_anchor + R(θ_anchor) p_local</text>
+</svg>

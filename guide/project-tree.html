@@ -1,0 +1,5177 @@
+
+<!doctype html>
+<html lang="ko" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="ROBOTIS FFW-SH5의 ROS-free MuJoCo 텔레오퍼레이션과 ACT 모방학습 — whole-body/arm-only IK, 색상 분류, joint/task policy, PTE와 검증 문서.">
+      
+      
+        <meta name="author" content="ggh-png">
+      
+      
+        <link rel="canonical" href="https://ggh-png.github.io/aiworker-mj-lab/guide/project-tree.html">
+      
+      
+        <link rel="prev" href="../overview.html">
+      
+      
+        <link rel="next" href="source-layout.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>프로젝트 파일 트리와 역할 - aiworker-mj-lab</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../css/custom.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          콘텐츠로 이동
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="상단/헤더">
+    <a href="../index.html" title="aiworker-mj-lab" class="md-header__button md-logo" aria-label="aiworker-mj-lab" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            aiworker-mj-lab
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              프로젝트 파일 트리와 역할
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="다크 모드로 전환"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="다크 모드로 전환" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="라이트 모드로 전환"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="라이트 모드로 전환" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="검색" placeholder="검색" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="검색">
+        
+        <button type="reset" class="md-search__icon md-icon" title="지우기" aria-label="지우기" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            검색 초기화
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ggh-png/aiworker-mj-lab" title="저장소로 이동" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="탭" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  홈
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../getting-started.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  처음 사용하기
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="il/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  모방학습
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  시스템 이해와 개발
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../api/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API 레퍼런스
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../releases.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  릴리스 기록
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="네비게이션" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="aiworker-mj-lab" class="md-nav__button md-logo" aria-label="aiworker-mj-lab" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    aiworker-mj-lab
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ggh-png/aiworker-mj-lab" title="저장소로 이동" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    홈
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    처음 사용하기
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    처음 사용하기
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    빠른 시작
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    YAML 파라미터 설정
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../run.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    화면과 조작
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shelf-sort-task.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3단 선반-박스 색상 분류
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../control-modes.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    모드 선택
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    문제 해결
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    모방학습
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    모방학습
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="il/index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    시작
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    시작
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../huggingface.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    공개 정책·데이터셋 사용
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../imitation-commands.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    명령어 레퍼런스
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    데이터와 실행
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    데이터와 실행
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="imitation-sim2real.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    데이터 수집과 실기 전환
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modular-act-training.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Joint/Task 학습과 PTE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    결과와 분석
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    결과와 분석
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research-report.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ACT 연구 개요
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../evaluation-results.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    평가 결과 상세 분석
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    모델 이해
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    모델 이해
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="il/foundations.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    행동 복제와 데이터
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="il/vision-encoder.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CNN과 ResNet18
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="il/sequence-models.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RNN과 Transformer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="il/cvae.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VAE와 CVAE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="il/act.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ACT 아키텍처
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="act-implementation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    논문과 현재 구현 대응
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    개발
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    개발
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="imitation-code-structure.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    코드 구조
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="huggingface-publishing.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hugging Face 재배포
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    시스템 이해와 개발
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    시스템 이해와 개발
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    시스템 기초
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    시스템 기초
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../overview.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    시스템 구조와 데이터 흐름
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    프로젝트 파일 트리와 역할
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="project-tree.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    프로젝트 파일 트리와 역할
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="목차">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      목차
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        전체 트리
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#python" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python 패키지 상세 트리
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        계층별 책임과 데이터 경계
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="계층별 책임과 데이터 경계">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#teleop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        기본 teleop 호출 흐름
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#act" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ACT 학습 호출 흐름
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#act-teleop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ACT를 teleop에서 실행하는 흐름
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        루트, 설정과 모델
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        자산
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        실행 진입점과 공통 모듈
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        애플리케이션
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        제어
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        기구학
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#teleop_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        기본 teleop 시각화
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#il" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IL 구현 상세
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="IL 구현 상세">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#il_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IL 전체 데이터 계약
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#il_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IL 명령 계층
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#il_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IL 데이터 계층
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="IL 데이터 계층">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hdf5-episode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HDF5 episode 구조
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#il-mujoco" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IL MuJoCo 경계
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="IL MuJoCo 경계">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environment 생성 방식
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#act_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ACT 모델과 학습
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ACT 모델과 학습">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        파일별 책임
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#training-sample-shape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        한 training sample의 실제 shape
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#act_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ACT 실행 계층
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ACT 실행 계층">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#teleop_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        기본 teleop에 삽입되는 경로
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#il-interactive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IL interactive 앱
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#il-logger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IL 시각화와 외부 logger
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        테스트와 개발 도구
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        문서 파일
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        실행 중 생성되는 파일
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="source-layout.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    소스 구조와 정리 원칙
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    애플리케이션
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    애플리케이션
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="teleop_app.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    앱 실행과 목표 좌표
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    시각화
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    시각화
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="teleop_ui.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UI와 렌더링
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    기구학과 수학
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    기구학과 수학
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="kinematics.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    전체 안내
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5_2" id="__nav_4_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    구조와 정기구학
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    구조와 정기구학
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="forward-kinematics.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tree, FK와 Jacobian
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5_3" id="__nav_4_5_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    회전과 충돌
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    회전과 충돌
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="quaternion-math.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quaternion과 자세 오차
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="collision-kinematics.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Collision distance와 gradient
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5_4" id="__nav_4_5_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    역기구학
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    역기구학
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ik-math.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Differential IK 수학
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    제어
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    제어
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="whole_body_ik.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    전신 IK와 충돌 회피
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="arm_control.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    팔 토크 제어
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="base_teleop.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    모바일 스워브 제어
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="grasp.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    손 파지와 접촉 판정
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_7" id="__nav_4_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    검증과 확장
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    검증과 확장
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    테스트와 검증
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pitfalls.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    개발 체크리스트
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../api/index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API 레퍼런스
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API 레퍼런스
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/config.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    설정
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/application.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    애플리케이션
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/kinematics.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    기구학
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/control.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    제어
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/visualization.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    시각화
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../releases.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    릴리스 기록
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="목차">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      목차
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        전체 트리
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#python" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python 패키지 상세 트리
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        계층별 책임과 데이터 경계
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="계층별 책임과 데이터 경계">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#teleop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        기본 teleop 호출 흐름
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#act" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ACT 학습 호출 흐름
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#act-teleop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ACT를 teleop에서 실행하는 흐름
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        루트, 설정과 모델
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        자산
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        실행 진입점과 공통 모듈
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        애플리케이션
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        제어
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        기구학
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#teleop_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        기본 teleop 시각화
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#il" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IL 구현 상세
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="IL 구현 상세">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#il_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IL 전체 데이터 계약
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#il_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IL 명령 계층
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#il_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IL 데이터 계층
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="IL 데이터 계층">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hdf5-episode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HDF5 episode 구조
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#il-mujoco" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IL MuJoCo 경계
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="IL MuJoCo 경계">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environment 생성 방식
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#act_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ACT 모델과 학습
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ACT 모델과 학습">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        파일별 책임
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#training-sample-shape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        한 training sample의 실제 shape
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#act_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ACT 실행 계층
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ACT 실행 계층">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#teleop_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        기본 teleop에 삽입되는 경로
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#il-interactive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IL interactive 앱
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#il-logger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IL 시각화와 외부 logger
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        테스트와 개발 도구
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        문서 파일
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        실행 중 생성되는 파일
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="_1">프로젝트 파일 트리와 역할<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<p>이 페이지는 저장소에서 파일을 찾을 때 사용하는 단일 지도다. Python 소스는 파일별로
+표시하고, 같은 목적으로 반복되는 STL·학습 episode·checkpoint는 패턴으로 묶었다.
+<code>datasets/</code>, <code>outputs/</code>, <code>site/</code>처럼 실행 중 내용이 바뀌는 디렉터리는 생성물 구조를
+기준으로 설명한다.</p>
+<h2 id="_2">전체 트리<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>ffw-sh5-grasp/
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── .github/workflows/gendoc.yml       # 문서 빌드·GitHub Pages 배포
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>├── assets/                            # 로봇·손·캔 시각 mesh와 texture
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>├── config/
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>│   ├── default.yaml                   # teleop·IK·제어 기본 설정
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│   └── imitation/
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│       ├── dataset.yaml               # IL dataset 계약 참고값(현재 loader 미연결)
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│       └── act.yaml                   # ACT 모델·학습·W&amp;B 설정
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>├── models/
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>│   ├── full_scene.xml                 # 기본 teleop와 can-to-box 전체 장면
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>│   ├── arm_hand.xml                   # 고정 베이스 팔·손 시험 장면
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>│   └── hand_only.xml                  # 손과 물체만 쓰는 파지 시험 장면
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>├── src/
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>│   ├── teleop_app.py                  # 기본 teleop 진입점
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>│   ├── il.py                          # IL 통합 명령 진입점
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>│   └── ffw_sh5_grasp/
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>│       ├── application/               # 앱 조립과 frame loop
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>│       ├── control/                   # arm·base·hand·whole-body 제어
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>│       ├── kinematics/                # FK·Jacobian·IK·충돌 수학
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>│       ├── visualization/             # 기본 teleop UI·렌더링
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>│       ├── imitation/                 # IL 데이터·ACT·실행·시각화
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>│       ├── cli/                       # `src/il.py` 하위 명령
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>│       ├── config.py                  # YAML loader와 검증
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>│       ├── mujoco_utils.py            # MuJoCo 이름·주소 조회 보조 함수
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>│       └── paths.py                   # 저장소 공통 경로
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>├── tests/                             # 단계별·IL 회귀와 개발 도구
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>├── docs/                              # MkDocs 원본 문서
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>├── datasets/                          # 수집한 HDF5/Rerun 데이터, Git 제외
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>├── outputs/                           # 학습·평가 결과, Git 제외
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>├── mkdocs.yml                         # 문서 사이트 설정과 내비게이션
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>├── requirements-runtime.txt           # 기본 teleop Python 의존성
+<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>├── requirements-imitation.txt         # IL 추가 Python 의존성
+<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>├── requirements-huggingface.txt       # 공개 자산 다운로드·배포 의존성
+<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>├── requirements-dev.txt               # pytest·Ruff 개발 의존성
+<a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>├── requirements-docs.txt              # MkDocs 문서 의존성
+<a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a>├── requirements-presentation.txt      # 보고서·발표 자료 생성 의존성
+<a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a>├── README.md                          # 저장소 첫 안내
+<a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a>├── CHANGELOG.md                       # 변경 기록
+<a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>└── .gitignore                         # 생성물·로컬 상태 제외 규칙
+</code></pre></div>
+<h2 id="python">Python 패키지 상세 트리<a class="headerlink" href="#python" title="Permanent link">&para;</a></h2>
+<p>아래는 <code>src/ffw_sh5_grasp/</code>를 생략 없이 파일 단위로 펼친 트리다. <code>__init__.py</code>는
+각 디렉터리를 Python package로 만들고, 외부에서 사용할 공개 이름을 정리한다.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>src/ffw_sh5_grasp/
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>├── __init__.py                         # 최상위 package 공개 API
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>├── config.py                           # YAML 설정 loader·검증
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>├── paths.py                            # 저장소·model·config 공통 경로
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>├── mujoco_utils.py                     # MuJoCo object ID/address 조회
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>│
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>├── application/                        # 최상위 앱 조립과 실행 상태
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>│   ├── __init__.py                     # application 공개 API
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>│   ├── teleop.py                       # TeleopApp 조립·lifecycle·ACT/IK 전환
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>│   ├── control_loop.py                 # frame별 제어 명령 중재
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>│   ├── state.py                        # model 주소 cache·상태 snapshot
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>│   └── targets.py                      # 양팔 target pose와 좌표계 변환
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>│
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>├── control/                            # target을 actuator 명령으로 변환
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>│   ├── __init__.py                     # controller 공개 API
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>│   ├── arm.py                          # 팔 PD + dynamics feed-forward torque
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>│   ├── base.py                         # body twist → swerve steer/drive
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>│   ├── bimanual.py                     # 양손 상대 pose constraint
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>│   ├── grasp.py                        # grasp synergy·접촉 판정
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>│   └── whole_body.py                   # base·lift·양팔 whole-body IK 조립
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>│
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>├── kinematics/                         # 로봇 기구학과 최적화 수학
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>│   ├── __init__.py                     # 기구학 공개 API
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>│   ├── tree.py                         # kinematic tree·FK·Jacobian
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>│   ├── joint_space.py                  # 선택 관절 offline FK
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>│   ├── rotations.py                    # quaternion·회전 수학
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>│   ├── tasks.py                        # IK soft task·pose residual
+<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>│   ├── constraints.py                  # 속도·위치·barrier hard constraint
+<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>│   ├── collision.py                    # signed distance와 충돌 gradient
+<a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>│   ├── optimization.py                 # NumPy convex QP 수치 계산
+<a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>│   └── solver.py                       # differential IK solver 진입점
+<a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>│
+<a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>├── visualization/                      # 기본 teleop 표시와 사용자 입력
+<a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a>│   ├── __init__.py                     # visualization 공개 API
+<a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a>│   ├── ui.py                           # ImGui 제어·진단 panel
+<a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a>│   ├── render.py                       # MuJoCo scene·camera·viewport
+<a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a>│   ├── task_space.py                   # UI 숫자 입력 → IK target
+<a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a>│   └── diagnostics.py                  # pose·joint·tree 진단 표시
+<a id="__codelineno-1-39" name="__codelineno-1-39" href="#__codelineno-1-39"></a>│
+<a id="__codelineno-1-40" name="__codelineno-1-40" href="#__codelineno-1-40"></a>├── cli/                                # `src/il.py`의 명령별 parser/handler
+<a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a>│   ├── __init__.py                     # IL command dispatcher
+<a id="__codelineno-1-42" name="__codelineno-1-42" href="#__codelineno-1-42"></a>│   ├── record.py                       # demonstration 기록 명령
+<a id="__codelineno-1-43" name="__codelineno-1-43" href="#__codelineno-1-43"></a>│   ├── replay.py                       # episode replay 명령
+<a id="__codelineno-1-44" name="__codelineno-1-44" href="#__codelineno-1-44"></a>│   ├── validate.py                     # dataset 검증 명령
+<a id="__codelineno-1-45" name="__codelineno-1-45" href="#__codelineno-1-45"></a>│   ├── visualize.py                    # episode RGB video 명령
+<a id="__codelineno-1-46" name="__codelineno-1-46" href="#__codelineno-1-46"></a>│   ├── rerun.py                        # HDF5 → Rerun 변환 명령
+<a id="__codelineno-1-47" name="__codelineno-1-47" href="#__codelineno-1-47"></a>│   ├── train.py                        # ACT 학습 명령
+<a id="__codelineno-1-48" name="__codelineno-1-48" href="#__codelineno-1-48"></a>│   ├── evaluate.py                     # closed-loop 평가 명령
+<a id="__codelineno-1-49" name="__codelineno-1-49" href="#__codelineno-1-49"></a>│   ├── evaluate_color_sort.py          # 4-policy PTE 평가 행렬
+<a id="__codelineno-1-50" name="__codelineno-1-50" href="#__codelineno-1-50"></a>│   ├── gradcam.py                      # ACT action-target Grad-CAM
+<a id="__codelineno-1-51" name="__codelineno-1-51" href="#__codelineno-1-51"></a>│   └── compare.py                      # expert-policy 비교 명령
+<a id="__codelineno-1-52" name="__codelineno-1-52" href="#__codelineno-1-52"></a>│
+<a id="__codelineno-1-53" name="__codelineno-1-53" href="#__codelineno-1-53"></a>└── imitation/                          # 모방학습 전체 기능
+<a id="__codelineno-1-54" name="__codelineno-1-54" href="#__codelineno-1-54"></a>    ├── __init__.py                     # IL package 설명과 경계
+<a id="__codelineno-1-55" name="__codelineno-1-55" href="#__codelineno-1-55"></a>    │
+<a id="__codelineno-1-56" name="__codelineno-1-56" href="#__codelineno-1-56"></a>    ├── data/                           # 파일 형식과 episode lifecycle
+<a id="__codelineno-1-57" name="__codelineno-1-57" href="#__codelineno-1-57"></a>    │   ├── __init__.py                 # episode I/O·schema 공개 API
+<a id="__codelineno-1-58" name="__codelineno-1-58" href="#__codelineno-1-58"></a>    │   ├── schema.py                   # canonical 16D schema·index
+<a id="__codelineno-1-59" name="__codelineno-1-59" href="#__codelineno-1-59"></a>    │   ├── episode.py                  # HDF5 읽기·검증·원자적 저장
+<a id="__codelineno-1-60" name="__codelineno-1-60" href="#__codelineno-1-60"></a>    │   ├── recording.py                # obs/action 정렬·기록 buffer
+<a id="__codelineno-1-61" name="__codelineno-1-61" href="#__codelineno-1-61"></a>    │   ├── replay.py                   # 저장 action 결정적 실행
+<a id="__codelineno-1-62" name="__codelineno-1-62" href="#__codelineno-1-62"></a>    │   ├── validation.py               # dataset directory 구조 검사
+<a id="__codelineno-1-63" name="__codelineno-1-63" href="#__codelineno-1-63"></a>    │   └── paths.py                    # episode filename/path 규칙
+<a id="__codelineno-1-64" name="__codelineno-1-64" href="#__codelineno-1-64"></a>    │
+<a id="__codelineno-1-65" name="__codelineno-1-65" href="#__codelineno-1-65"></a>    ├── simulation/                     # MuJoCo와 policy 사이 adapter
+<a id="__codelineno-1-66" name="__codelineno-1-66" href="#__codelineno-1-66"></a>    │   ├── __init__.py                 # environment·action 공개 API
+<a id="__codelineno-1-67" name="__codelineno-1-67" href="#__codelineno-1-67"></a>    │   ├── action.py                   # 16D action 검증·controller 분배
+<a id="__codelineno-1-68" name="__codelineno-1-68" href="#__codelineno-1-68"></a>    │   ├── state.py                    # MuJoCo state → 16D policy state
+<a id="__codelineno-1-69" name="__codelineno-1-69" href="#__codelineno-1-69"></a>    │   ├── cameras.py                  # named policy RGB rendering
+<a id="__codelineno-1-70" name="__codelineno-1-70" href="#__codelineno-1-70"></a>    │   ├── task.py                     # can reset·성공 조건
+<a id="__codelineno-1-71" name="__codelineno-1-71" href="#__codelineno-1-71"></a>    │   └── environment.py              # reset·observe·step 환경 API
+<a id="__codelineno-1-72" name="__codelineno-1-72" href="#__codelineno-1-72"></a>    │
+<a id="__codelineno-1-73" name="__codelineno-1-73" href="#__codelineno-1-73"></a>    ├── act/                            # ACT 신경망과 학습
+<a id="__codelineno-1-74" name="__codelineno-1-74" href="#__codelineno-1-74"></a>    │   ├── __init__.py                 # ACTPolicy·config 공개 API
+<a id="__codelineno-1-75" name="__codelineno-1-75" href="#__codelineno-1-75"></a>    │   ├── backbone.py                 # ResNet18·2D position embedding
+<a id="__codelineno-1-76" name="__codelineno-1-76" href="#__codelineno-1-76"></a>    │   ├── transformer.py              # positional encoder/decoder
+<a id="__codelineno-1-77" name="__codelineno-1-77" href="#__codelineno-1-77"></a>    │   ├── policy.py                   # CVAE ACT forward·loss
+<a id="__codelineno-1-78" name="__codelineno-1-78" href="#__codelineno-1-78"></a>    │   ├── representations.py          # Joint/Task state·action 변환
+<a id="__codelineno-1-79" name="__codelineno-1-79" href="#__codelineno-1-79"></a>    │   ├── dataset_loader.py           # split·정규화·action chunk sample
+<a id="__codelineno-1-80" name="__codelineno-1-80" href="#__codelineno-1-80"></a>    │   ├── training_config.py          # 학습 YAML typed config
+<a id="__codelineno-1-81" name="__codelineno-1-81" href="#__codelineno-1-81"></a>    │   ├── trainer.py                  # epoch·optimizer·checkpoint
+<a id="__codelineno-1-82" name="__codelineno-1-82" href="#__codelineno-1-82"></a>    │   └── training_output.py          # CSV·JSONL·metric plot
+<a id="__codelineno-1-83" name="__codelineno-1-83" href="#__codelineno-1-83"></a>    │
+<a id="__codelineno-1-84" name="__codelineno-1-84" href="#__codelineno-1-84"></a>    ├── runtime/                        # 학습된 ACT 실행과 평가
+<a id="__codelineno-1-85" name="__codelineno-1-85" href="#__codelineno-1-85"></a>    │   ├── __init__.py                 # policy run 탐색 공개 API
+<a id="__codelineno-1-86" name="__codelineno-1-86" href="#__codelineno-1-86"></a>    │   ├── runner.py                   # checkpoint 추론·temporal ensemble
+<a id="__codelineno-1-87" name="__codelineno-1-87" href="#__codelineno-1-87"></a>    │   ├── catalog.py                  # outputs/act run 탐색
+<a id="__codelineno-1-88" name="__codelineno-1-88" href="#__codelineno-1-88"></a>    │   ├── task_space.py               # Task 출력 → 오른팔 IK
+<a id="__codelineno-1-89" name="__codelineno-1-89" href="#__codelineno-1-89"></a>    │   └── evaluation.py               # rollout 실행·metric 집계
+<a id="__codelineno-1-90" name="__codelineno-1-90" href="#__codelineno-1-90"></a>    │
+<a id="__codelineno-1-91" name="__codelineno-1-91" href="#__codelineno-1-91"></a>    ├── apps/                           # IL 전용 interactive 앱
+<a id="__codelineno-1-92" name="__codelineno-1-92" href="#__codelineno-1-92"></a>    │   ├── __init__.py                 # IL app package 설명(재-export 없음)
+<a id="__codelineno-1-93" name="__codelineno-1-93" href="#__codelineno-1-93"></a>    │   ├── base.py                     # GLFW/ImGui 공통 lifecycle
+<a id="__codelineno-1-94" name="__codelineno-1-94" href="#__codelineno-1-94"></a>    │   ├── leader.py                   # leader 입력 → 16D action
+<a id="__codelineno-1-95" name="__codelineno-1-95" href="#__codelineno-1-95"></a>    │   └── recording.py                # demonstration 기록 UI
+<a id="__codelineno-1-96" name="__codelineno-1-96" href="#__codelineno-1-96"></a>    │
+<a id="__codelineno-1-97" name="__codelineno-1-97" href="#__codelineno-1-97"></a>    └── visualization/                  # IL 결과를 외부 viewer에 기록
+<a id="__codelineno-1-98" name="__codelineno-1-98" href="#__codelineno-1-98"></a>        ├── __init__.py                 # IL visualization package 설명
+<a id="__codelineno-1-99" name="__codelineno-1-99" href="#__codelineno-1-99"></a>        ├── rerun_blueprints.py         # 공통 Rerun layout
+<a id="__codelineno-1-100" name="__codelineno-1-100" href="#__codelineno-1-100"></a>        ├── rerun_robot.py              # MuJoCo robot entity 기록
+<a id="__codelineno-1-101" name="__codelineno-1-101" href="#__codelineno-1-101"></a>        ├── rerun_live.py               # 수집 중 live stream
+<a id="__codelineno-1-102" name="__codelineno-1-102" href="#__codelineno-1-102"></a>        ├── rerun_dataset.py            # HDF5 episode 시각화
+<a id="__codelineno-1-103" name="__codelineno-1-103" href="#__codelineno-1-103"></a>        ├── rerun_rollout.py            # rollout·expert 비교 기록
+<a id="__codelineno-1-104" name="__codelineno-1-104" href="#__codelineno-1-104"></a>        ├── rerun_training.py           # 학습 metric Rerun 기록
+<a id="__codelineno-1-105" name="__codelineno-1-105" href="#__codelineno-1-105"></a>        ├── gradcam.py                  # policy camera별 action attribution
+<a id="__codelineno-1-106" name="__codelineno-1-106" href="#__codelineno-1-106"></a>        └── wandb_training.py           # 학습 metric W&amp;B 기록
+</code></pre></div>
+<h2 id="_3">계층별 책임과 데이터 경계<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>같은 로봇을 다루더라도 package마다 소유하는 데이터와 출력이 다르다. 아래 경계를
+지키면 UI, 제어기와 ACT가 서로 직접 얽히는 것을 막을 수 있다.</p>
+<table>
+<thead>
+<tr>
+<th>계층</th>
+<th>주 입력</th>
+<th>주 출력</th>
+<th>포함하면 안 되는 책임</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>application</code></td>
+<td>사용자 입력, app state, 설정</td>
+<td>frame 단위 mode와 호출 순서</td>
+<td>IK 수식, ACT layer 구현</td>
+</tr>
+<tr>
+<td><code>control</code></td>
+<td>target pose·관절 target·body twist</td>
+<td>actuator torque/position/velocity 명령</td>
+<td>창 렌더링, dataset 저장</td>
+</tr>
+<tr>
+<td><code>kinematics</code></td>
+<td>joint state, task, constraint</td>
+<td>FK/Jacobian 또는 <code>dq</code></td>
+<td>ImGui, checkpoint, 학습 loop</td>
+</tr>
+<tr>
+<td><code>visualization</code></td>
+<td>표시용 snapshot과 UI event</td>
+<td>화면 draw와 target 변경 요청</td>
+<td>actuator 실행, policy 학습</td>
+</tr>
+<tr>
+<td><code>cli</code></td>
+<td>command-line argument</td>
+<td>적절한 application/service 호출</td>
+<td>알고리즘 재구현</td>
+</tr>
+<tr>
+<td><code>imitation.data</code></td>
+<td>NumPy observation/action</td>
+<td>HDF5 episode와 validation 결과</td>
+<td>MuJoCo step, neural network</td>
+</tr>
+<tr>
+<td><code>imitation.simulation</code></td>
+<td>MuJoCo model/data, 16D action</td>
+<td>policy observation, task metric</td>
+<td>ACT 내부 구조</td>
+</tr>
+<tr>
+<td><code>imitation.act</code></td>
+<td>정규화 tensor와 training config</td>
+<td>action chunk, loss, checkpoint</td>
+<td>GUI, 실제 환경 reset</td>
+</tr>
+<tr>
+<td><code>imitation.runtime</code></td>
+<td>checkpoint, 통계, observation</td>
+<td>실행할 16D action과 평가 결과</td>
+<td>데이터 수집 UI</td>
+</tr>
+<tr>
+<td><code>imitation.apps</code></td>
+<td>key/mouse event와 서비스 객체</td>
+<td>record/policy app lifecycle</td>
+<td>ACT layer·HDF5 schema 재정의</td>
+</tr>
+<tr>
+<td><code>imitation.visualization</code></td>
+<td>이미 계산된 상태와 metric</td>
+<td>Rerun/W&amp;B log</td>
+<td>제어 상태 변경</td>
+</tr>
+</tbody>
+</table>
+<h3 id="teleop">기본 teleop 호출 흐름<a class="headerlink" href="#teleop" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>flowchart LR
+    ENTRY["src/teleop_app.py"] --&gt; APP["application/teleop.py"]
+    APP --&gt; UI["visualization/"]
+    APP --&gt; LOOP["application/control_loop.py"]
+    LOOP --&gt; WB["control/whole_body.py"]
+    WB --&gt; IK["kinematics/"]
+    LOOP --&gt; ARM["control/arm.py"]
+    LOOP --&gt; BASE["control/base.py"]
+    LOOP --&gt; HAND["control/grasp.py"]</code></pre>
+<h3 id="act">ACT 학습 호출 흐름<a class="headerlink" href="#act" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>flowchart LR
+    CLI["src/il.py train"] --&gt; TC["cli/train.py"]
+    TC --&gt; CFG["act/training_config.py"]
+    TC --&gt; TR["act/trainer.py"]
+    TR --&gt; DATA["act/dataset_loader.py"]
+    TR --&gt; POLICY["act/policy.py"]
+    POLICY --&gt; CNN["act/backbone.py"]
+    POLICY --&gt; TF["act/transformer.py"]
+    TR --&gt; LOG["training_output + visualization"]</code></pre>
+<h3 id="act-teleop">ACT를 teleop에서 실행하는 흐름<a class="headerlink" href="#act-teleop" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>flowchart LR
+    UI["visualization/ui.py"] --&gt; APP["application/teleop.py"]
+    APP --&gt; CAT["runtime/catalog.py"]
+    APP --&gt; ENV["simulation/environment.py"]
+    ENV --&gt; OBS["state.py + cameras.py"]
+    OBS --&gt; RUN["runtime/runner.py"]
+    RUN --&gt; ENV
+    ENV --&gt; CTRL["기존 arm·grasp controller"]
+    APP --&gt;|"종료·중단"| IK["기존 IK mode"]</code></pre>
+<h2 id="_4">루트, 설정과 모델<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>파일·경로</th>
+<th>역할</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.github/workflows/gendoc.yml</code></td>
+<td><code>main</code>의 문서 변경 시 MkDocs를 빌드하고 <code>gh-pages</code>에 배포한다.</td>
+</tr>
+<tr>
+<td><code>.gitignore</code></td>
+<td>가상환경, 캐시, dataset, output, Rerun, MuJoCo/ImGui 로컬 상태를 Git에서 제외한다.</td>
+</tr>
+<tr>
+<td><code>README.md</code></td>
+<td>설치, 실행과 프로젝트 개요를 제공하는 저장소 시작점이다.</td>
+</tr>
+<tr>
+<td><code>CHANGELOG.md</code></td>
+<td>기능·구조·동작 변경 이력을 기록한다.</td>
+</tr>
+<tr>
+<td><code>requirements-runtime.txt</code></td>
+<td>MuJoCo, GLFW, ImGui, NumPy와 YAML 등 기본 teleop 의존성이다.</td>
+</tr>
+<tr>
+<td><code>requirements-imitation.txt</code></td>
+<td>PyTorch, torchvision, HDF5, Rerun, W&amp;B 등 IL 기능의 추가 의존성이다.</td>
+</tr>
+<tr>
+<td><code>requirements-huggingface.txt</code></td>
+<td>IL 의존성에 Hugging Face Hub CLI를 추가한다.</td>
+</tr>
+<tr>
+<td><code>requirements-dev.txt</code></td>
+<td>Hugging Face 프로필에 pytest와 Ruff를 추가한다.</td>
+</tr>
+<tr>
+<td><code>requirements-docs.txt</code></td>
+<td>MkDocs와 Material theme를 설치한다. runtime과 독립적이다.</td>
+</tr>
+<tr>
+<td><code>requirements-presentation.txt</code></td>
+<td>평가 그래프와 PPTX를 다시 만드는 분석 도구를 설치한다.</td>
+</tr>
+<tr>
+<td><code>mkdocs.yml</code></td>
+<td>Material 테마, Markdown 확장, 문서 메뉴와 배포 사이트 정보를 정의한다.</td>
+</tr>
+<tr>
+<td><code>config/default.yaml</code></td>
+<td>teleop, 카메라, IK, 충돌 회피, arm/base/grasp 제어 기본값이다.</td>
+</tr>
+<tr>
+<td><code>config/imitation/dataset.yaml</code></td>
+<td>task, 저장 경로, 주기, camera, 차원과 split의 참고 manifest다. 현재 Python 코드에서 읽지 않으므로 실제 수집 설정은 <code>default.yaml</code>, 학습 split은 <code>act.yaml</code>이 결정한다.</td>
+</tr>
+<tr>
+<td><code>config/imitation/act.yaml</code></td>
+<td>camera, policy 차원, chunk, Transformer, optimizer, split, W&amp;B 학습 설정이다.</td>
+</tr>
+<tr>
+<td><code>models/full_scene.xml</code></td>
+<td>FFW-SH5 전체 로봇, 바닥·테이블·캔·목표 상자·카메라·actuator를 조립한 기본 장면이다.</td>
+</tr>
+<tr>
+<td><code>models/arm_hand.xml</code></td>
+<td>이동 베이스를 제외하고 팔 IK와 손 파지를 빠르게 시험하는 장면이다.</td>
+</tr>
+<tr>
+<td><code>models/hand_only.xml</code></td>
+<td>손가락 접촉, synergy와 grasp 유지 시험용 최소 장면이다.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_5">자산<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>파일·경로</th>
+<th>역할</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>assets/robotis_ffw/LICENSE</code></td>
+<td>ROBOTIS 모델 자산의 라이선스다.</td>
+</tr>
+<tr>
+<td><code>assets/robotis_ffw/ffw_*.xml</code></td>
+<td>FFW 변형별 로봇 본체 MJCF 원본이다.</td>
+</tr>
+<tr>
+<td><code>assets/robotis_ffw/scene_ffw_*.xml</code></td>
+<td>원본 로봇을 단독 확인하는 예제 scene이다.</td>
+</tr>
+<tr>
+<td><code>assets/robotis_ffw/assets/ffw_b/*.stl</code></td>
+<td>FFW-B의 base, body, head와 양팔 visual mesh다.</td>
+</tr>
+<tr>
+<td><code>assets/robotis_ffw/assets/ffw_s/*.stl</code></td>
+<td>현재 FFW-SH5가 쓰는 base, lift, wheel, head와 양팔 visual mesh다.</td>
+</tr>
+<tr>
+<td><code>assets/robotis_ffw/assets/hx5_d20/**</code></td>
+<td>HX5-D20 좌·우손의 base, thumb, finger link mesh다.</td>
+</tr>
+<tr>
+<td><code>assets/robotis_ffw/assets/rh_p12_rn/*.stl</code></td>
+<td>대체 gripper 형상의 visual mesh다.</td>
+</tr>
+<tr>
+<td><code>assets/soda_can/soda_can.stl</code></td>
+<td>캔 원본 형상이다.</td>
+</tr>
+<tr>
+<td><code>assets/soda_can/can_side_detail.obj</code></td>
+<td>원주 UV를 포함한 캔 측면 visual mesh다.</td>
+</tr>
+<tr>
+<td><code>assets/soda_can/can_cap_detail.obj</code></td>
+<td>윗면·밑면과 pull-tab을 유지하는 캔 cap mesh다.</td>
+</tr>
+<tr>
+<td><code>assets/soda_can/soda_can_label.png</code></td>
+<td>캔 측면 OBJ에 적용하는 label texture다.</td>
+</tr>
+</tbody>
+</table>
+<p>STL/OBJ는 시각 형상이다. 충돌 안정성이나 접촉을 바꾸려면 mesh만 수정하지 말고 이를
+참조하는 MJCF의 <code>geom</code>, <code>contype</code>, <code>conaffinity</code>와 contact exclude도 확인해야 한다.</p>
+<h2 id="_6">실행 진입점과 공통 모듈<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>파일</th>
+<th>역할</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/teleop_app.py</code></td>
+<td>YAML 경로를 받아 <code>TeleopApp</code>을 시작하는 얇은 기본 실행 파일이다.</td>
+</tr>
+<tr>
+<td><code>src/il.py</code></td>
+<td><code>record</code>, <code>replay</code>, <code>train</code>, <code>evaluate</code> 등 IL 하위 명령을 선택하는 dispatcher다.</td>
+</tr>
+<tr>
+<td><code>src/ffw_sh5_grasp/__init__.py</code></td>
+<td>패키지 설명과 공개 최상위 API 경계다.</td>
+</tr>
+<tr>
+<td><code>src/ffw_sh5_grasp/config.py</code></td>
+<td><code>default.yaml</code>을 dataclass로 읽고 잘못된 키·범위를 검증한다.</td>
+</tr>
+<tr>
+<td><code>src/ffw_sh5_grasp/paths.py</code></td>
+<td>저장소 root와 기본 model/config 경로를 한곳에서 계산한다.</td>
+</tr>
+<tr>
+<td><code>src/ffw_sh5_grasp/mujoco_utils.py</code></td>
+<td>joint, actuator, body 같은 MuJoCo object의 ID와 address 조회를 공통화한다.</td>
+</tr>
+</tbody>
+</table>
+<p><code>src/</code> 루트에는 위 두 실행 파일만 둔다. 알고리즘 구현을 새 root script에 넣지 않고
+책임에 맞는 <code>ffw_sh5_grasp</code> 하위 package에 추가한다.</p>
+<h2 id="_7">애플리케이션<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>파일</th>
+<th>역할</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>application/__init__.py</code></td>
+<td>앱 계층에서 외부에 제공할 이름을 정리한다.</td>
+</tr>
+<tr>
+<td><code>application/teleop.py</code></td>
+<td>창, MuJoCo model/data, controller, UI와 ACT 실행을 조립하는 최상위 <code>TeleopApp</code>이다.</td>
+</tr>
+<tr>
+<td><code>application/control_loop.py</code></td>
+<td>한 frame에서 keyboard base 명령과 IK 명령을 중재하고 controller를 호출한다.</td>
+</tr>
+<tr>
+<td><code>application/state.py</code></td>
+<td>MuJoCo 주소 cache와 UI/제어 사이에 전달할 상태 snapshot을 정의한다.</td>
+</tr>
+<tr>
+<td><code>application/targets.py</code></td>
+<td>좌·우 end-effector target pose와 좌표계 변환, 양손 target 보조 연산을 담당한다.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_8">제어<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>파일</th>
+<th>역할</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>control/__init__.py</code></td>
+<td>arm, base, grasp와 whole-body controller의 공개 API다.</td>
+</tr>
+<tr>
+<td><code>control/arm.py</code></td>
+<td>관절 target을 PD와 중력·코리올리 전향 보상 torque로 변환한다.</td>
+</tr>
+<tr>
+<td><code>control/base.py</code></td>
+<td>body twist를 세 swerve module의 steer angle과 wheel speed로 변환한다.</td>
+</tr>
+<tr>
+<td><code>control/bimanual.py</code></td>
+<td>rigid bimanual grasp의 상대 pose reference와 task를 계산한다.</td>
+</tr>
+<tr>
+<td><code>control/grasp.py</code></td>
+<td>하나의 grasp 값에서 손가락 synergy target을 만들고 접촉력으로 파지를 판정한다.</td>
+</tr>
+<tr>
+<td><code>control/whole_body.py</code></td>
+<td>base, lift, 양팔 자유도를 하나의 differential whole-body IK 문제로 조립한다.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_9">기구학<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>파일</th>
+<th>역할</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>kinematics/__init__.py</code></td>
+<td>tree, task, constraint, solver의 안정된 공개 import 경로다.</td>
+</tr>
+<tr>
+<td><code>kinematics/tree.py</code></td>
+<td>MuJoCo에서 불변 kinematic tree를 만들고 FK와 geometric Jacobian을 계산한다.</td>
+</tr>
+<tr>
+<td><code>kinematics/joint_space.py</code></td>
+<td>선택 관절만 사용하는 offline FK와 demonstration 보조 계산을 제공한다.</td>
+</tr>
+<tr>
+<td><code>kinematics/rotations.py</code></td>
+<td>quaternion 정규화·곱·차이와 회전 변환을 제공한다.</td>
+</tr>
+<tr>
+<td><code>kinematics/tasks.py</code></td>
+<td>위치·자세·posture 같은 soft IK task와 residual/Jacobian을 만든다.</td>
+</tr>
+<tr>
+<td><code>kinematics/constraints.py</code></td>
+<td>관절 위치·속도 bound와 collision barrier 같은 hard constraint를 만든다.</td>
+</tr>
+<tr>
+<td><code>kinematics/collision.py</code></td>
+<td>MuJoCo signed distance와 kinematic Jacobian으로 충돌 제약 gradient를 계산한다.</td>
+</tr>
+<tr>
+<td><code>kinematics/optimization.py</code></td>
+<td>differential IK용 convex QP를 NumPy 기반으로 푸는 수치 계층이다.</td>
+</tr>
+<tr>
+<td><code>kinematics/solver.py</code></td>
+<td>task와 constraint를 모아 한 step의 joint velocity를 구하는 IK 진입점이다.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="teleop_1">기본 teleop 시각화<a class="headerlink" href="#teleop_1" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>파일</th>
+<th>역할</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>visualization/__init__.py</code></td>
+<td>기본 UI와 renderer의 공개 API다.</td>
+</tr>
+<tr>
+<td><code>visualization/ui.py</code></td>
+<td>ImGui 제어 패널, mode, ACT run 선택과 start/stop 입력을 그린다.</td>
+</tr>
+<tr>
+<td><code>visualization/render.py</code></td>
+<td>MuJoCo scene, viewport, camera와 mouse 상호작용을 처리한다.</td>
+</tr>
+<tr>
+<td><code>visualization/task_space.py</code></td>
+<td>UI의 task-space 숫자 입력을 IK target 상태에 반영한다.</td>
+</tr>
+<tr>
+<td><code>visualization/diagnostics.py</code></td>
+<td>pose, joint, kinematic tree와 solver 진단 패널을 표시한다.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="il">IL 구현 상세<a class="headerlink" href="#il" title="Permanent link">&para;</a></h2>
+<p>이 프로젝트에는 ACT를 다루는 경로가 두 가지 있다. 같은 환경 계약을 사용하지만
+환경 소유권과 목적이 다르므로 먼저 구분해야 한다.</p>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>진입점</th>
+<th>MuJoCo/창</th>
+<th>목적</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>데이터 수집</td>
+<td><code>src/il.py record</code></td>
+<td>별도 arm-only 환경과 창 생성</td>
+<td>전문가 episode 기록</td>
+</tr>
+<tr>
+<td>기본 teleop 내 policy</td>
+<td><code>src/teleop_app.py</code>의 ACT panel</td>
+<td>현재 <code>TeleopApp.model/data/window</code> 재사용</td>
+<td>같은 화면에서 ACT 실행 후 IK 복귀</td>
+</tr>
+</tbody>
+</table>
+<h3 id="il_1">IL 전체 데이터 계약<a class="headerlink" href="#il_1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>수집
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>GizmoLeader → 16D action → AIWorkerMujocoEnv.step
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>            ↘ obs_t/action_t → EpisodeRecorder → episode_XXXXXX.hdf5
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>학습
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>HDF5 → Joint 또는 Task 8D 변환 → train 통계 + 2 RGB → ACT → K×8 예측
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>추론
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>16D qpos/right EE pose → checkpoint 표현 선택 → ACT → K×8 → temporal ensemble
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    ├─ Joint: 16D 확장 → environment.step
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>    └─ Task: 오른팔 IK → 16D action → environment.step
+</code></pre></div>
+<p>canonical state/action은 left-first 16차원이다.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>[left arm joint 1..7, left grasp,
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a> right arm joint 1..7, right grasp]
+</code></pre></div>
+<p>현재 <code>config/imitation/act.yaml</code>은 <code>policy_side: right</code>이므로 ACT tensor에는 index
+<code>8..15</code>의 8차원만 들어간다. HDF5와 environment는 계속 16차원을 유지한다.</p>
+<h3 id="il_2">IL 명령 계층<a class="headerlink" href="#il_2" title="Permanent link">&para;</a></h3>
+<p><code>src/il.py</code>는 <code>ffw_sh5_grasp.cli.main()</code>만 호출한다. <code>cli/__init__.py</code>는 첫 번째
+argument를 <code>COMMANDS</code>에서 찾은 뒤 선택한 module만 지연 import한다. 따라서 예를 들어
+dataset 검증만 할 때 PyTorch나 GLFW를 불필요하게 import하지 않는다.</p>
+<table>
+<thead>
+<tr>
+<th>명령·파일</th>
+<th>직접 호출하는 구현</th>
+<th>입력</th>
+<th>결과와 정확한 동작</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>record</code> · <code>cli/record.py</code></td>
+<td><code>apps.recording.RecordEpisodesApp</code></td>
+<td>task, dataset 경로, seed, Rerun 옵션</td>
+<td>Gizmo leader로 조작한 <code>(obs_t, action_t)</code>를 다음 episode 번호의 HDF5로 저장한다.</td>
+</tr>
+<tr>
+<td><code>replay</code> · <code>cli/replay.py</code></td>
+<td><code>data.replay.replay_episode</code>, <code>AIWorkerMujocoEnv</code></td>
+<td>episode 또는 dataset/index, 허용 오차, viewer</td>
+<td>저장 seed로 reset한 뒤 action을 재실행한다. 기록 qpos와 최대 오차가 허용 범위 밖이면 exit code 1이다.</td>
+</tr>
+<tr>
+<td><code>validate</code> · <code>cli/validate.py</code></td>
+<td><code>data.validation.inspect_dataset</code></td>
+<td>dataset 경로, 필수 camera 목록</td>
+<td>모든 <code>episode_*.hdf5</code>의 구조·shape·dtype·finite 값을 검사하고 유효하지 않으면 exit code 1이다.</td>
+</tr>
+<tr>
+<td><code>visualize</code> · <code>cli/visualize.py</code></td>
+<td><code>data.episode.load_episode</code>, ImageIO</td>
+<td>episode 또는 dataset/index</td>
+<td>모든 camera frame을 가로로 연결한 H.264 MP4를 episode의 <code>control_hz</code>로 작성한다.</td>
+</tr>
+<tr>
+<td><code>rerun</code> · <code>cli/rerun.py</code></td>
+<td><code>visualization.rerun_dataset</code></td>
+<td>episode, output 또는 live port</td>
+<td><code>.rrd</code>로 저장하거나 Rerun Viewer에 직접 stream한다.</td>
+</tr>
+<tr>
+<td><code>train</code> · <code>cli/train.py</code></td>
+<td><code>act.trainer.train</code></td>
+<td>ACT YAML</td>
+<td>split·통계·metric·plot과 best/last checkpoint가 있는 run directory를 만든다.</td>
+</tr>
+<tr>
+<td><code>evaluate</code> · <code>cli/evaluate.py</code></td>
+<td><code>runtime.evaluation.evaluate</code></td>
+<td>checkpoint, episode 수, max steps, seed</td>
+<td>새 arm-only 환경에서 closed-loop rollout을 실행하고 <code>evaluation.json</code>을 쓴다. 성공해도 조기 종료하지 않고 max steps까지 진행한다.</td>
+</tr>
+<tr>
+<td><code>compare</code> · <code>cli/compare.py</code></td>
+<td><code>load_episode</code>, <code>ACTPolicyRunner</code>, <code>RolloutRerunLogger</code></td>
+<td>checkpoint와 기록 episode</td>
+<td>기록된 관측에 policy를 적용하는 offline 비교다. MuJoCo에 예측 action을 실행하지 않고 expert/policy action을 <code>.rrd</code>에 함께 기록한다.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="il_3">IL 데이터 계층<a class="headerlink" href="#il_3" title="Permanent link">&para;</a></h2>
+<p><code>imitation/data</code>는 MuJoCo와 PyTorch를 import하지 않는다. HDF5 schema, 기록 정렬과
+파일 검증만 소유하므로 GPU가 없는 환경에서도 dataset을 검사할 수 있다.</p>
+<table>
+<thead>
+<tr>
+<th>파일</th>
+<th>핵심 객체·함수</th>
+<th>실제 책임</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>imitation/__init__.py</code></td>
+<td>package 설명</td>
+<td>IL 하위 package의 경계를 설명한다. 구현 객체를 다시 export하지 않는다.</td>
+</tr>
+<tr>
+<td><code>data/__init__.py</code></td>
+<td><code>EpisodeData</code>, <code>load_episode</code>, <code>write_episode</code>, <code>resolve_episode_path</code>, <code>ACTION_*</code></td>
+<td>공개 API는 유지하되 HDF5 episode I/O는 최초 접근 시 지연 import한다. 일반 teleop의 schema import가 <code>h5py</code>를 요구하지 않는다.</td>
+</tr>
+<tr>
+<td><code>data/schema.py</code></td>
+<td><code>ACTION_NAMES</code>, <code>ACTION_DIM=16</code>, <code>RIGHT_POLICY_INDICES=8..15</code>, <code>ARM_JOINTS</code></td>
+<td>저장 파일, leader, environment와 runner가 공유하는 left-first index 계약의 단일 출처다.</td>
+</tr>
+<tr>
+<td><code>data/episode.py</code></td>
+<td><code>EpisodeData</code>, <code>validate_episode</code>, <code>write_episode</code>, <code>load_episode</code>, <code>next_episode_path</code></td>
+<td>배열 길이·16D shape·finite·RGB dtype을 검사한다. 임시 파일에 쓴 뒤 <code>os.replace</code>하여 episode를 원자적으로 저장하고, schema version과 attrs를 기록한다.</td>
+</tr>
+<tr>
+<td><code>data/recording.py</code></td>
+<td><code>EpisodeBuffer</code>, <code>EpisodeRecorder</code></td>
+<td>environment를 step하기 <strong>전</strong>의 <code>obs_t</code>와 그때 적용할 <code>action_t</code>를 복사해 정렬한다. 완료 시 seed, control Hz, model hash, Git commit, camera와 성공 여부를 attrs에 넣는다.</td>
+</tr>
+<tr>
+<td><code>data/replay.py</code></td>
+<td><code>replay_episode</code></td>
+<td>저장 seed로 환경을 reset하고 action을 순서대로 실행한다. 각 step 전 qpos를 기록 episode와 비교해 최대 재현 오차를 반환한다.</td>
+</tr>
+<tr>
+<td><code>data/validation.py</code></td>
+<td><code>EpisodeInspection</code>, <code>DatasetInspection</code>, <code>inspect_episode</code>, <code>inspect_dataset</code></td>
+<td>camera frame을 한 번에 읽지 않고 metadata와 숫자 배열을 block 단위로 검사한다. episode가 하나도 없어도 dataset은 invalid다.</td>
+</tr>
+<tr>
+<td><code>data/paths.py</code></td>
+<td><code>resolve_episode_path</code></td>
+<td>명시 <code>--episode</code>를 우선하고, 없으면 <code>dataset_dir/episode_%06d.hdf5</code>를 만든다. 파일 존재 검사는 호출 계층이 담당한다.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="hdf5-episode">HDF5 episode 구조<a class="headerlink" href="#hdf5-episode" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>episode_XXXXXX.hdf5
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>├── observations/
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>│   ├── qpos                  # float [T,16]
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>│   ├── qvel                  # float [T,16]
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>│   └── images/
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>│       ├── cam_high          # uint8 [T,H,W,3]
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>│       └── cam_right_wrist   # uint8 [T,H,W,3]
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>├── action                    # float [T,16]
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>├── debug/                    # full MuJoCo state·task pose 등 선택 정보
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>└── attrs                     # seed, control_hz, model_hash, success 등
+</code></pre></div>
+<p><code>debug/</code>는 시각화와 진단용이며 ACT 학습 입력이 아니다.</p>
+<h2 id="il-mujoco">IL MuJoCo 경계<a class="headerlink" href="#il-mujoco" title="Permanent link">&para;</a></h2>
+<p><code>imitation/simulation</code>은 정책 종류를 모른다. 16D action을 물리에 적용하고 정책용
+observation을 만드는 환경 adapter이므로, ACT를 다른 정책으로 바꾸더라도 이 계층의
+계약은 유지할 수 있다.</p>
+<table>
+<thead>
+<tr>
+<th>파일</th>
+<th>핵심 객체·함수</th>
+<th>실제 책임</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>simulation/__init__.py</code></td>
+<td><code>AIWorkerMujocoEnv</code>, <code>ActionAdapter</code>, <code>DecodedAction</code></td>
+<td>환경과 action adapter만 공개한다. camera/state/task 세부 객체는 직접 import한다.</td>
+</tr>
+<tr>
+<td><code>simulation/action.py</code></td>
+<td><code>ActionAdapter</code>, <code>DecodedAction</code></td>
+<td>16D shape·finite·관절 범위·grasp <code>[0,1]</code>을 검사하거나 clip하고, 좌·우 7축과 grasp로 decode한다. <code>encode()</code>는 반대 변환이다.</td>
+</tr>
+<tr>
+<td><code>simulation/state.py</code></td>
+<td><code>PolicyStateAdapter</code></td>
+<td>MuJoCo arm qpos/qvel을 읽고, 여러 손가락 관절을 grasp command와 같은 선형 synergy에 최소제곱 투영해 16D qpos/qvel을 만든다.</td>
+</tr>
+<tr>
+<td><code>simulation/cameras.py</code></td>
+<td><code>MujocoCameraManager</code></td>
+<td>기본 <code>cam_high</code>, <code>cam_right_wrist</code>를 uint8 RGB로 렌더한다. 정책 관측에서 head self-occluder와 operator marker group을 제외한다. 독립 renderer와 teleop의 공유 OpenGL context 경로를 모두 지원한다.</td>
+</tr>
+<tr>
+<td><code>simulation/task.py</code></td>
+<td><code>CanInBoxTask</code>, <code>TaskMetrics</code></td>
+<td>target site 기준 원판 안에서 캔 시작 위치를 randomize한다. 상자 XY 내부·높이 범위·속도 제한을 모두 만족할 때만 성공이다. <code>reset()</code>은 캔 free joint만 변경한다.</td>
+</tr>
+<tr>
+<td><code>simulation/environment.py</code></td>
+<td><code>AIWorkerMujocoEnv</code>, <code>enable_task_collisions</code></td>
+<td>새 model/data를 소유하거나 기존 teleop model/data에 attach한다. 설정상 기본 25 Hz control frame 동안 arm torque와 grasp를 반복 적용한다. lift·head·wheel actuator는 home 명령으로, planar base는 passive stiffness/damping으로 유지하고 target bin과 오른손 task contact를 활성화한다.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="environment">Environment 생성 방식<a class="headerlink" href="#environment" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>방식</th>
+<th>사용 위치</th>
+<th>reset 의미</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AIWorkerMujocoEnv()</code></td>
+<td>record, replay, evaluate</td>
+<td>자체 model/data를 만들고 home keyframe으로 로봇 전체를 reset한 뒤 캔을 randomize한다.</td>
+</tr>
+<tr>
+<td><code>AIWorkerMujocoEnv(model=..., data=..., reset_on_init=False, ...)</code></td>
+<td>기본 <code>TeleopApp</code> 내 ACT</td>
+<td>현재 화면의 model/data와 로봇 자세를 그대로 사용한다. 초기화 시 로봇이나 캔을 재배치하지 않는다.</td>
+</tr>
+</tbody>
+</table>
+<p>environment observation은 다음 dictionary다.</p>
+<table>
+<thead>
+<tr>
+<th>key</th>
+<th>값</th>
+<th>policy 사용 여부</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>qpos</code></td>
+<td><code>[16]</code> arm joint + 측정 grasp synergy</td>
+<td>사용하며 runner가 policy index만 선택</td>
+</tr>
+<tr>
+<td><code>qvel</code></td>
+<td><code>[16]</code> joint/synergy velocity</td>
+<td>HDF5에는 저장하지만 현재 ACT 입력에는 미사용</td>
+</tr>
+<tr>
+<td><code>images</code></td>
+<td><code>{camera_name: uint8[H,W,3]}</code></td>
+<td>사용</td>
+</tr>
+<tr>
+<td><code>task</code></td>
+<td>success, 위치 오차, 물체 속도</td>
+<td>평가·UI에 사용, ACT 입력에는 미사용</td>
+</tr>
+<tr>
+<td><code>debug</code></td>
+<td>full qpos/qvel, 물체·target·양손 pose</td>
+<td>기록·Rerun 진단용, ACT 입력에는 미사용</td>
+</tr>
+</tbody>
+</table>
+<h2 id="act_1">ACT 모델과 학습<a class="headerlink" href="#act_1" title="Permanent link">&para;</a></h2>
+<h3 id="_10">파일별 책임<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>파일</th>
+<th>핵심 객체·함수</th>
+<th>실제 책임</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>act/__init__.py</code></td>
+<td><code>ACTPolicy</code>, <code>ACTPolicyConfig</code></td>
+<td>외부에 모델과 직렬화 가능한 architecture config만 공개한다. 학습은 <code>trainer</code>에서 직접 import한다.</td>
+</tr>
+<tr>
+<td><code>act/backbone.py</code></td>
+<td><code>FrozenBatchNorm2d</code>, <code>ResNet18Backbone</code>, <code>PositionEmbeddingSine2D</code></td>
+<td>torchvision ResNet18의 마지막 pooling/FC를 제거해 stride-32, 512-channel spatial feature를 반환한다. ImageNet BatchNorm 통계는 고정하고 2D DETR 위치 embedding을 만든다.</td>
+</tr>
+<tr>
+<td><code>act/transformer.py</code></td>
+<td><code>PositionalEncoder*</code>, <code>PositionalDecoder*</code></td>
+<td>PyTorch attention의 query/key에 매 layer 위치 embedding을 더하는 post-normalized DETR식 encoder/decoder를 구현한다.</td>
+</tr>
+<tr>
+<td><code>act/policy.py</code></td>
+<td><code>ACTPolicyConfig</code>, <code>ACTPolicy</code></td>
+<td>posterior encoder, image/qpos/latent observation encoder, learned action-query decoder를 조립한다. 학습은 sampled latent, 추론은 <code>z=0</code>이며 masked L1 + <code>kl_weight·KL</code>을 반환한다.</td>
+</tr>
+<tr>
+<td><code>act/representations.py</code></td>
+<td><code>JointRepresentation</code>, <code>RightTaskRepresentation</code></td>
+<td>같은 HDF5에서 Joint 8D 또는 right EE pose+grasp Task 8D state/action을 만든다. Task target은 기록된 joint action의 FK 결과다.</td>
+</tr>
+<tr>
+<td><code>act/dataset_loader.py</code></td>
+<td><code>DatasetStats</code>, <code>split_episodes</code>, <code>compute_stats</code>, <code>ACTEpisodeDataset</code></td>
+<td>representation 변환 뒤 train 통계를 만들고, 각 episode에서 임의 timestep 하나와 최대 <code>K</code> action을 image와 정렬해 읽는다.</td>
+</tr>
+<tr>
+<td><code>act/training_config.py</code></td>
+<td><code>WandbConfig</code>, <code>ACTTrainingConfig</code></td>
+<td>YAML의 representation, policy side, camera, 차원, split, optimizer 값을 하나의 계약으로 검증한다.</td>
+</tr>
+<tr>
+<td><code>act/trainer.py</code></td>
+<td><code>train</code>, <code>_run_epoch</code>, <code>_optimizer</code></td>
+<td>seed를 고정하고 DataLoader·ACT·AdamW를 만든다. backbone과 나머지 parameter group에 별도 learning rate를 적용하고 매 epoch train/validation, logger, best/last checkpoint를 갱신한다.</td>
+</tr>
+<tr>
+<td><code>act/training_output.py</code></td>
+<td><code>write_metrics</code>, <code>plot_metric</code></td>
+<td>전체 history를 CSV/JSONL로 다시 쓰고 Pillow만으로 loss·L1·KL·learning-rate PNG를 만든다. loss plot에는 best validation epoch를 표시한다.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="training-sample-shape">한 training sample의 실제 shape<a class="headerlink" href="#training-sample-shape" title="Permanent link">&para;</a></h3>
+<p>현재 오른팔 설정에서 <code>ACTEpisodeDataset.__getitem__()</code>은 다음을 반환한다.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>qpos    : float32 [8]             # t의 오른팔 qpos, train 통계로 정규화
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>images  : float32 [2,3,240,320]   # t의 RGB, [0,1]
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>actions : float32 [90,8]          # t:t+90, train 통계로 정규화
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>is_pad  : bool    [90]            # episode 끝 이후 True
+</code></pre></div>
+<p>DataLoader가 batch 축을 추가한다. <code>policy.py</code> 내부에서는 다음 순서로 흐른다.</p>
+<pre class="mermaid"><code>flowchart LR
+    GT["qpos + 정답 action chunk"] --&gt; POST["posterior encoder"]
+    POST --&gt; Z["mu, logvar → sampled z"]
+    RGB["2 RGB"] --&gt; RES["shared ResNet18"]
+    RES --&gt; IMG["spatial tokens + 2D position"]
+    Q["qpos"] --&gt; OBS["observation encoder"]
+    Z --&gt; OBS
+    IMG --&gt; OBS
+    OBS --&gt; DEC["90 learned queries + decoder"]
+    DEC --&gt; OUT["90×8 action"]</code></pre>
+<p>한 epoch의 dataset 길이는 전체 frame 수가 아니라 <strong>train episode 수</strong>다. 각 episode는
+그 epoch에 임의 timestep 하나를 제공하고, 2000 epoch 동안 다른 timestep을 반복
+sampling한다. split의 test episode 목록은 <code>episode_splits.json</code>에 저장되지만 현재
+<code>trainer.py</code>는 train과 validation loader만 실행한다. test 성능은 별도 평가 단계에서
+측정해야 한다.</p>
+<h2 id="act_2">ACT 실행 계층<a class="headerlink" href="#act_2" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>파일</th>
+<th>핵심 객체·함수</th>
+<th>실제 책임</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>runtime/__init__.py</code></td>
+<td><code>PolicyRun</code>, <code>discover_policy_runs</code></td>
+<td>UI에서 필요한 run catalog만 package API로 공개한다. runner와 evaluate는 해당 module에서 직접 import한다.</td>
+</tr>
+<tr>
+<td><code>runtime/catalog.py</code></td>
+<td><code>ACT_OUTPUT_DIR</code>, <code>PolicyRun</code>, <code>discover_policy_runs</code></td>
+<td><code>outputs/act/&lt;run&gt;/checkpoints/*.ckpt</code>만 찾는다. run은 checkpoint 수정 시각 최신순, checkpoint는 best → last → 나머지 이름순이다.</td>
+</tr>
+<tr>
+<td><code>runtime/runner.py</code></td>
+<td><code>ACTPolicyRunner</code>, <code>TemporalAggregator</code></td>
+<td>checkpoint의 Joint/Task 표현과 통계를 복원한다. 동일 target timestep 후보를 ensemble하고 Joint는 16D로 확장하며 Task는 EE target을 반환한다.</td>
+</tr>
+<tr>
+<td><code>runtime/evaluation.py</code></td>
+<td><code>evaluate</code></td>
+<td>seed를 episode마다 1씩 늘려 새 환경을 reset한다. 매 rollout을 max steps까지 수행하고 성공률, 최종 오차, action 크기·변화를 <code>evaluation.json</code>에 저장한다.</td>
+</tr>
+</tbody>
+</table>
+<p><code>ACTPolicyRunner.reset()</code>은 timestep과 temporal candidate를 모두 지운다. 새 episode,
+캔 reset 또는 policy 종료 후 이를 호출하지 않으면 이전 chunk의 미래 action이 다음
+작업에 섞일 수 있다.</p>
+<h3 id="teleop_2">기본 teleop에 삽입되는 경로<a class="headerlink" href="#teleop_2" title="Permanent link">&para;</a></h3>
+<ol>
+<li><code>visualization/ui.py</code>가 <code>outputs/act</code>의 run/checkpoint와 max steps를 선택한다.</li>
+<li><code>application/teleop.py</code>가 checkpoint 경로가 <code>outputs/act</code> 내부인지 검사한다.</li>
+<li><code>ACTPolicyRunner</code>를 만들고 현재 <code>self.model</code>, <code>self.data</code>, <code>self.context</code>를 넘겨
+   <code>AIWorkerMujocoEnv(reset_on_init=False)</code>를 만든다.</li>
+<li>policy camera만 shared offscreen framebuffer로 렌더한 뒤 항상 window framebuffer를
+   복구한다.</li>
+<li>policy가 physics를 소유하는 동안 일반 IK step을 건너뛴다.</li>
+<li>max steps 또는 <code>Stop + Return to IK</code>에서 현재 양손 pose·관절·grasp를 읽고 policy
+   environment를 닫은 다음 IK target을 그 측정값에 맞춰 rebase한다.</li>
+</ol>
+<p><code>R</code>은 이 embedded 경로에서 로봇 전체가 아니라 캔만 reset하며 runner의 temporal state도
+초기화한다. task success만으로 rollout을 끝내지 않으므로 demonstration에 들어 있는
+원점 복귀 동작은 max steps까지 계속 실행될 수 있다.</p>
+<h2 id="il-interactive">IL interactive 앱<a class="headerlink" href="#il-interactive" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>파일</th>
+<th>핵심 객체·함수</th>
+<th>실제 책임</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>apps/__init__.py</code></td>
+<td>package 설명</td>
+<td>현재 별도 객체를 re-export하지 않는다.</td>
+</tr>
+<tr>
+<td><code>apps/base.py</code></td>
+<td><code>KeyEdge</code>, <code>render_operator_frame</code></td>
+<td>key가 눌리는 순간만 검출하고 MuJoCo scene → overlay → ImGui → swap 순서의 공통 frame을 그린다.</td>
+</tr>
+<tr>
+<td><code>apps/leader.py</code></td>
+<td><code>Leader</code>, <code>GizmoLeader</code></td>
+<td>leader interface를 정의한다. GizmoLeader는 양손 target을 arm-only DLS IK로 16D 절대 action에 바꾸며, 속도가 제한된 joint-space home return과 grasp toggle을 제공한다.</td>
+</tr>
+<tr>
+<td><code>apps/recording.py</code></td>
+<td><code>RecordEpisodesApp</code></td>
+<td>자체 환경, GizmoLeader, EpisodeRecorder와 live Rerun logger를 조립한다. 매 frame <code>record(obs_t, action_t)</code> 후 <code>env.step(action_t)</code> 순서를 지킨다. <code>R</code>은 진행 중 episode를 버리고 로봇 home+캔을 reset한다.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="il-logger">IL 시각화와 외부 logger<a class="headerlink" href="#il-logger" title="Permanent link">&para;</a></h2>
+<p>이 계층은 계산된 관측·행동·metric을 표시할 뿐 environment를 step하거나 policy를
+학습하지 않는다. Rerun과 W&amp;B는 사용하는 시점에만 import하는 optional dependency다.</p>
+<table>
+<thead>
+<tr>
+<th>파일</th>
+<th>핵심 객체·함수</th>
+<th>기록하는 내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>visualization/__init__.py</code></td>
+<td>package 설명</td>
+<td>현재 객체를 다시 export하지 않는다.</td>
+</tr>
+<tr>
+<td><code>visualization/rerun_blueprints.py</code></td>
+<td>dataset/live/training/rollout blueprint</td>
+<td>camera, robot 3D, joint/action time series와 metric panel 배치를 만든다.</td>
+</tr>
+<tr>
+<td><code>visualization/rerun_robot.py</code></td>
+<td><code>MujocoRobotRerunLogger</code></td>
+<td><code>base_link</code> 하위의 collision 없는 visual geom 형상을 한 번 기록하고, 매 frame world transform을 갱신한다.</td>
+</tr>
+<tr>
+<td><code>visualization/rerun_live.py</code></td>
+<td><code>LiveRecordingRerunLogger</code></td>
+<td>수집 중 RGB, 16D qpos/qvel/action, task 성공·오차와 recording 상태를 viewer에 stream한다.</td>
+</tr>
+<tr>
+<td><code>visualization/rerun_dataset.py</code></td>
+<td><code>log_episode</code>, <code>stream_episode</code></td>
+<td>HDF5의 RGB와 action/state를 기록한다. <code>debug/full_qpos</code>가 있으면 MuJoCo visual robot pose도 복원한다.</td>
+</tr>
+<tr>
+<td><code>visualization/rerun_rollout.py</code></td>
+<td><code>RolloutRerunLogger</code></td>
+<td>평가/비교의 RGB, state, 실행 action, 선택적 expert action과 전체 predicted chunk tensor를 <code>.rrd</code>로 쓴다.</td>
+</tr>
+<tr>
+<td><code>visualization/rerun_training.py</code></td>
+<td><code>TrainingRerunLogger</code></td>
+<td>epoch 시간축에 train/val loss·L1·KL과 learning rate를 기록한다.</td>
+</tr>
+<tr>
+<td><code>visualization/wandb_training.py</code></td>
+<td><code>TrainingWandbLogger</code></td>
+<td>W&amp;B run을 열고 전체 config를 저장하며 epoch metric을 <code>global_step</code> 기준으로 전송하고 정상/오류 종료 상태로 finish한다.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_11">테스트와 개발 도구<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>파일</th>
+<th>검증 범위</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tests/test_config.py</code></td>
+<td>YAML 기본값, 부분 override와 알 수 없는 key 거부</td>
+</tr>
+<tr>
+<td><code>tests/test_phase_0.py</code></td>
+<td>공식 FFW model과 기본 model 구성</td>
+</tr>
+<tr>
+<td><code>tests/test_phase_1.py</code></td>
+<td>hand-only scene, 손가락 관절과 충돌</td>
+</tr>
+<tr>
+<td><code>tests/test_phase_2.py</code></td>
+<td>손 파지·들기와 접촉 유지</td>
+</tr>
+<tr>
+<td><code>tests/test_phase_3.py</code></td>
+<td>arm-hand scene, 6D IK와 torque 제어</td>
+</tr>
+<tr>
+<td><code>tests/test_phase_4.py</code></td>
+<td>전체 로봇 고정 base 회귀</td>
+</tr>
+<tr>
+<td><code>tests/test_phase_5.py</code></td>
+<td>swerve 이동, 정지와 물리 안정성</td>
+</tr>
+<tr>
+<td><code>tests/test_phase_6.py</code></td>
+<td>can target, UI와 teleop 통합</td>
+</tr>
+<tr>
+<td><code>tests/test_whole_body.py</code></td>
+<td>mobile kinematics와 whole-body IK</td>
+</tr>
+<tr>
+<td><code>tests/test_il_action.py</code></td>
+<td>16D action 계약, 고정 왼팔과 home return bound</td>
+</tr>
+<tr>
+<td><code>tests/test_il_cameras.py</code></td>
+<td>camera extrinsic, 영상 shape와 debug marker 제외</td>
+</tr>
+<tr>
+<td><code>tests/test_il_dataset.py</code></td>
+<td>HDF5 episode 저장·읽기 round trip</td>
+</tr>
+<tr>
+<td><code>tests/test_il_dataset_validation.py</code></td>
+<td>dataset 검사 결과와 통계</td>
+</tr>
+<tr>
+<td><code>tests/test_il_episodes.py</code></td>
+<td>episode path와 번호 해석</td>
+</tr>
+<tr>
+<td><code>tests/test_il_record_alignment.py</code></td>
+<td>observation/action timestep 정렬</td>
+</tr>
+<tr>
+<td><code>tests/test_il_replay.py</code></td>
+<td>기록 action의 결정적 replay</td>
+</tr>
+<tr>
+<td><code>tests/test_il_state_adapter.py</code></td>
+<td>MuJoCo state와 16D policy state 변환</td>
+</tr>
+<tr>
+<td><code>tests/test_il_env.py</code></td>
+<td>arm-only reset/step, 기존 teleop model 재사용과 can-only reset</td>
+</tr>
+<tr>
+<td><code>tests/test_il_act.py</code></td>
+<td>ACT shape/loss, checkpoint 복원과 temporal ensemble</td>
+</tr>
+<tr>
+<td><code>tests/test_il_training.py</code></td>
+<td>1-epoch 학습과 output artifact 생성</td>
+</tr>
+<tr>
+<td><code>tests/test_il_policy_catalog.py</code></td>
+<td>출력 디렉터리의 Joint/Task policy run 탐색</td>
+</tr>
+<tr>
+<td><code>tests/test_il_rerun.py</code></td>
+<td>Rerun optional dependency 경계</td>
+</tr>
+<tr>
+<td><code>tests/generate_can_label_mesh.py</code></td>
+<td>원본 캔 STL에서 UV가 있는 side/cap OBJ를 만드는 일회성 asset 도구</td>
+</tr>
+<tr>
+<td><code>tests/measure_hand_meshes.py</code></td>
+<td>손 mesh 크기와 기준점을 측정하는 개발 도구</td>
+</tr>
+<tr>
+<td><code>tests/offline_pose_ik.py</code></td>
+<td>회귀용 목표 관절 pose를 계산하는 offline IK 도구</td>
+</tr>
+<tr>
+<td><code>tests/record_demo.py</code></td>
+<td>scripted grasp/lift 동작을 GIF로 기록하는 개발 도구</td>
+</tr>
+<tr>
+<td><code>tests/render_snapshot.py</code></td>
+<td>model pose를 offscreen snapshot으로 확인하는 개발 도구</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_12">문서 파일<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>역할</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>docs/index.md</code></td>
+<td>문서 사이트 홈</td>
+</tr>
+<tr>
+<td><code>docs/getting-started.md</code></td>
+<td>설치와 최초 실행</td>
+</tr>
+<tr>
+<td><code>docs/run.md</code>, <code>docs/control-modes.md</code></td>
+<td>화면 조작과 제어 mode</td>
+</tr>
+<tr>
+<td><code>docs/configuration.md</code></td>
+<td>YAML parameter reference</td>
+</tr>
+<tr>
+<td><code>docs/imitation-commands.md</code></td>
+<td><code>src/il.py</code> 전체 명령 reference</td>
+</tr>
+<tr>
+<td><code>docs/overview.md</code></td>
+<td>시스템 구성 요소와 데이터 흐름</td>
+</tr>
+<tr>
+<td><code>docs/guide/index.md</code></td>
+<td>시스템 이해와 개발 문서의 목적별 index</td>
+</tr>
+<tr>
+<td><code>docs/guide/project-tree.md</code></td>
+<td>현재 읽고 있는 프로젝트 파일 지도</td>
+</tr>
+<tr>
+<td><code>docs/guide/source-layout.md</code></td>
+<td>새 코드를 둘 위치와 legacy 삭제 원칙</td>
+</tr>
+<tr>
+<td><code>docs/guide/il/</code></td>
+<td>BC, ResNet, sequence model, CVAE와 ACT 기반 지식</td>
+</tr>
+<tr>
+<td><code>docs/guide/act-implementation.md</code></td>
+<td>ACT 논문과 현재 코드의 세부 대응</td>
+</tr>
+<tr>
+<td><code>docs/guide/imitation-code-structure.md</code></td>
+<td>IL package의 의존 방향과 정식 import 경로</td>
+</tr>
+<tr>
+<td><code>docs/guide/imitation-sim2real.md</code></td>
+<td>데이터 수집부터 실제 로봇 전환 범위</td>
+</tr>
+<tr>
+<td><code>docs/guide/*.md</code></td>
+<td>기구학·제어·UI 구성 요소별 설계 설명</td>
+</tr>
+<tr>
+<td><code>docs/api/*.md</code></td>
+<td>package별 공개 Python API reference</td>
+</tr>
+<tr>
+<td><code>docs/testing.md</code></td>
+<td>변경 영역별 검증 명령과 gate</td>
+</tr>
+<tr>
+<td><code>docs/troubleshooting.md</code></td>
+<td>실행·렌더링·제어·IL 문제 해결</td>
+</tr>
+<tr>
+<td><code>docs/releases.md</code></td>
+<td>문서화된 release 변경 사항</td>
+</tr>
+<tr>
+<td><code>docs/assets/</code></td>
+<td>문서에 삽입하는 그림·GIF·SVG</td>
+</tr>
+<tr>
+<td><code>docs/css/custom.css</code></td>
+<td>Material theme 보조 style</td>
+</tr>
+<tr>
+<td><code>docs/javascripts/mathjax.js</code></td>
+<td>수식 렌더링 설정</td>
+</tr>
+<tr>
+<td><code>docs/Makefile</code></td>
+<td><code>make build</code>, <code>serve</code>, <code>deploy</code>를 MkDocs 명령에 연결</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_13">실행 중 생성되는 파일<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h2>
+<p>다음 파일은 소스가 아니며 <code>.gitignore</code> 대상이다.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>datasets/can_to_box/
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>├── episode_XXXXXX.hdf5           # qpos·qvel·action·RGB demonstration
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>└── episode_XXXXXX.rrd            # 선택적으로 만든 Rerun 기록
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>outputs/act/&lt;run_name&gt;/
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>├── config.yaml                   # 실제 학습에 사용한 설정 snapshot
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>├── dataset_stats.pkl             # qpos/action 정규화 통계
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>├── episode_splits.json           # train/validation/test episode 목록
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>├── checkpoints/
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>│   ├── policy_best.ckpt          # validation 기준 최상 checkpoint
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>│   └── policy_last.ckpt          # 마지막 epoch checkpoint
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>├── metrics/                      # CSV와 JSONL 학습 지표
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>├── plots/                        # loss·L1·KL·learning-rate plot
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>├── rerun/training.rrd            # 학습 Rerun 기록
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>└── evaluation/                   # 평가 요약과 rollout Rerun 기록
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a>site/                             # MkDocs build 결과
+<a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a>wandb/                            # 로컬 W&amp;B run/log
+<a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a>imgui.ini                         # 창 배치 상태
+<a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a>MUJOCO_LOG.TXT                    # MuJoCo runtime log
+<a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a>*.rrd                             # 임시 Rerun 기록
+<a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a>__pycache__/, .pytest_cache/      # Python/test cache
+</code></pre></div>
+<p>checkpoint를 실행할 때는 <code>.ckpt</code>만 복사하지 말고 같은 run의 <code>dataset_stats.pkl</code>과 설정을
+함께 보존해야 한다. 디렉터리 배치 규칙과 코드 추가 원칙은
+<a href="source-layout.html">소스 구조와 정리 원칙</a>, IL package 의존성은
+<a href="imitation-code-structure.html">모방학습 코드 구조</a>를 참고한다.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  맨위로
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="하단/푸터" >
+        
+          
+          <a href="../overview.html" class="md-footer__link md-footer__link--prev" aria-label="이전: 시스템 구조와 데이터 흐름">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                이전
+              </span>
+              <div class="md-ellipsis">
+                시스템 구조와 데이터 흐름
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="source-layout.html" class="md-footer__link md-footer__link--next" aria-label="다음: 소스 구조와 정리 원칙">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                다음
+              </span>
+              <div class="md-ellipsis">
+                소스 구조와 정리 원칙
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 ggh-png
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/ggh-png/aiworker-mj-lab" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "navigation.footer", "navigation.tracking", "content.code.copy", "content.code.annotate", "search.highlight", "search.suggest", "toc.follow"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\ud074\ub9bd\ubcf4\ub4dc\uc5d0 \ubcf5\uc0ac\ub428", "clipboard.copy": "\ud074\ub9bd\ubcf4\ub4dc\ub85c \ubcf5\uc0ac", "search.result.more.one": "\uc774 \ubb38\uc11c\uc5d0\uc11c 1\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.more.other": "\uc774 \ubb38\uc11c\uc5d0\uc11c #\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.none": "\uac80\uc0c9\uc5b4\uc640 \uc77c\uce58\ud558\ub294 \ubb38\uc11c\uac00 \uc5c6\uc2b5\ub2c8\ub2e4", "search.result.one": "1\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.other": "#\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.placeholder": "\uac80\uc0c9\uc5b4\ub97c \uc785\ub825\ud558\uc138\uc694", "search.result.term.missing": "\ud3ec\ud568\ub418\uc9c0 \uc54a\uc740 \uac80\uc0c9\uc5b4", "select.version": "\ubc84\uc804 \uc120\ud0dd"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

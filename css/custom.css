@@ -1,0 +1,49 @@
+/* mkdocs-material에 적용하는 aiworker-mj-lab 문서용 세부 조정 */
+
+:root {
+  --md-text-font: "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --md-code-font: "D2Coding", "Cascadia Code", ui-monospace, "SF Mono", Consolas, monospace;
+}
+
+.md-typeset {
+  line-height: 1.7;
+}
+
+/* 긴 fromto="..."·friction="..." 속성 때문에 모바일에서 가로 스크롤이 강제되지 않게 한다. */
+.md-typeset pre > code {
+  white-space: pre;
+  word-break: normal;
+}
+
+.md-typeset img {
+  border-radius: 4px;
+}
+
+.hero-figure img {
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  margin-bottom: 0.4em;
+}
+
+.hero-figure figcaption {
+  font-size: 0.78rem;
+  color: var(--md-default-fg-color--light);
+  font-style: italic;
+}
+
+/* 가이드 목차의 단계별 진행 배지 */
+.phase-track {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.2rem 0;
+}
+.phase-track span {
+  font-family: var(--md-code-font);
+  font-size: 0.72rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-top: 3px solid var(--md-primary-fg-color);
+  border-radius: 3px;
+  padding: 0.3rem 0.6rem;
+}
